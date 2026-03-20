@@ -1,0 +1,242 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --krishna-blue: #0A1F44;
+  --gold: #C8960C;
+  --saffron: #F5A623;
+  --cream: #FDF6EC;
+  --white: #FFFFFF;
+  --text-dark: #1A1A1A;
+  --text-muted: #6B7280;
+  --error: #DC2626;
+  --success: #16A34A;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--text-dark);
+  font-family: var(--font-inter), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-garamond), serif;
+}
+
+/* Utility classes */
+.font-garamond {
+  font-family: var(--font-garamond), serif;
+}
+
+.text-gold {
+  color: var(--gold);
+}
+
+.text-krishna-blue {
+  color: var(--krishna-blue);
+}
+
+.bg-krishna-blue {
+  background-color: var(--krishna-blue);
+}
+
+.bg-gold {
+  background-color: var(--gold);
+}
+
+.bg-cream {
+  background-color: var(--cream);
+}
+
+.bg-saffron {
+  background-color: var(--saffron);
+}
+
+/* Lotus pattern overlay */
+.lotus-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8960C' fill-opacity='0.06'%3E%3Cpath d='M30 0c0 16.569-13.431 30-30 30C16.569 30 30 43.431 30 60c0-16.569 13.431-30 30-30C43.431 30 30 16.569 30 0z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Gold gradient text */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #C8960C, #F5A623, #C8960C);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Section divider */
+.section-divider {
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--saffron));
+  border-radius: 2px;
+}
+
+/* Blockquote styling */
+.gita-quote {
+  border-left: 4px solid var(--gold);
+  padding-left: 1.5rem;
+  font-family: var(--font-garamond), serif;
+  font-style: italic;
+  color: var(--text-dark);
+}
+
+/* Button styles */
+.btn-gold {
+  background: linear-gradient(135deg, #C8960C, #F5A623);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.025em;
+}
+
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(200, 150, 12, 0.4);
+}
+
+.btn-outline-gold {
+  background: transparent;
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  letter-spacing: 0.025em;
+}
+
+.btn-outline-gold:hover {
+  background: var(--gold);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Card styles */
+.card-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(200, 150, 12, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(10, 31, 68, 0.08);
+}
+
+/* Admin sidebar */
+.admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #9CA3AF;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.admin-sidebar-link:hover,
+.admin-sidebar-link.active {
+  background: rgba(200, 150, 12, 0.1);
+  color: #C8960C;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 3px;
+}
+
+/* Form inputs */
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  color: var(--text-dark);
+}
+
+/* When a symbol like ₹ is shown as a prefix inside the input */
+.form-input-prefix {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  color: var(--text-dark);
+}
+
+.form-input:focus,
+.form-input-prefix:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200, 150, 12, 0.1);
+}
+
+.form-input.error,
+.form-input-prefix.error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Status badges */
+.badge-success {
+  display: inline-flex;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.badge-pending {
+  display: inline-flex;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.badge-failed {
+  display: inline-flex;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #FEE2E2;
+  color: #DC2626;
+}
