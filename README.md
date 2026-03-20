@@ -180,7 +180,7 @@ All website content (text, quotes, contact details, social links) is stored in t
 ## Developer
 
 Built by **[Your Name]**
-- GitHub: RagulM-69(https://github.com/yourusername)
+- GitHub: RagulM-69(https://github.com/RagulM-69)
 - Email: ragulm780@gmail.com
 
 ---
