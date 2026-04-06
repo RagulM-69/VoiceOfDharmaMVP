@@ -19,6 +19,17 @@ const TABS = [
   { id: 'social',     label: '📱 Social Links' },
 ]
 
+const PLATFORMS: Record<string, { label: string; icon: string; placeholder: string }> = {
+  facebook:  { label: 'Facebook',  icon: '📘', placeholder: 'https://facebook.com/...' },
+  instagram: { label: 'Instagram', icon: '📸', placeholder: 'https://instagram.com/...' },
+  youtube:   { label: 'YouTube',   icon: '▶️', placeholder: 'https://youtube.com/...' },
+  whatsapp:  { label: 'WhatsApp',  icon: '💬', placeholder: 'https://whatsapp.com/...' },
+  twitter:   { label: 'X / Twitter', icon: '🐦', placeholder: 'https://x.com/...' },
+  linkedin:  { label: 'LinkedIn',  icon: '💼', placeholder: 'https://linkedin.com/...' },
+  telegram:  { label: 'Telegram',  icon: '✈️', placeholder: 'https://t.me/...' },
+  custom:    { label: 'Custom',    icon: '🔗', placeholder: 'https://...' },
+}
+
 const LONG_KEYS = ['body', 'mission', 'why_gita', 'why_krishna', 'who', 'journey', 'vision', 'message', 'support', 'intro', 'subheading']
 
 export default function ContentEditorPage() {
@@ -28,6 +39,14 @@ export default function ContentEditorPage() {
   const [saving, setSaving] = useState<string | null>(null)
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
   const [editValues, setEditValues] = useState<Record<string, string>>({})
+
+  // Social link add form state
+  const [addPlatform, setAddPlatform] = useState('facebook')
+  const [addUrl, setAddUrl] = useState('')
+  const [addLabel, setAddLabel] = useState('')
+  const [addingLink, setAddingLink] = useState(false)
+  const [deletingKey, setDeletingKey] = useState<string | null>(null)
+  const [editingLink, setEditingLink] = useState<string | null>(null)
 
   // Haridas photo upload state
   const [photoUploading, setPhotoUploading] = useState(false)
@@ -52,7 +71,6 @@ export default function ContentEditorPage() {
       map[row.page][row.section][row.key] = row.value
     }
     setContentMap(map)
-    // Set initial photo preview if exists
     const existingPhoto = map?.haridas?.profile?.photo_url
     if (existingPhoto) setPhotoPreview(existingPhoto)
     setLoading(false)
@@ -93,6 +111,217 @@ export default function ContentEditorPage() {
     finally { setSaving(null) }
   }
 
+  // ─── Social Links CRUD ────────────────────────────────────────────────────
+
+  const socialLinks = Object.entries(contentMap?.social?.links || {}).map(([key, value]) => ({
+    key,
+    url: value,
+    platform: PLATFORMS[key] ? key : 'custom',
+    label: PLATFORMS[key]?.label || key,
+    icon: PLATFORMS[key]?.icon || '🔗',
+  }))
+
+  const addSocialLink = async () => {
+    if (!addUrl.trim()) return
+    const key = addPlatform === 'custom' ? (addLabel.trim().toLowerCase().replace(/\s+/g, '_') || `link_${Date.now()}`) : addPlatform
+    setAddingLink(true)
+    try {
+      const res = await fetch('/api/admin/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page: 'social', section: 'links', key, value: addUrl.trim() }),
+      })
+      const data = await res.json()
+      if (!data.success) throw new Error(data.error)
+      setContentMap(prev => ({
+        ...prev,
+        social: { ...prev.social, links: { ...(prev.social?.links || {}), [key]: addUrl.trim() } }
+      }))
+      setAddUrl('')
+      setAddLabel('')
+      setAddPlatform('facebook')
+      showToast('Link added!')
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Failed to add link', 'error')
+    } finally {
+      setAddingLink(false)
+    }
+  }
+
+  const deleteSocialLink = async (key: string) => {
+    if (!confirm(`Delete the ${key} link? This cannot be undone.`)) return
+    setDeletingKey(key)
+    try {
+      const res = await fetch('/api/admin/content/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page: 'social', section: 'links', key }),
+      })
+      if (!res.ok) throw new Error('Delete failed')
+      setContentMap(prev => {
+        const links = { ...prev.social?.links }
+        delete links[key]
+        return { ...prev, social: { ...prev.social, links } }
+      })
+      showToast('Link deleted')
+    } catch {
+      showToast('Failed to delete link', 'error')
+    } finally {
+      setDeletingKey(null)
+    }
+  }
+
+  const saveSocialLink = async (key: string) => {
+    const editKey = `social___links___${key}`
+    const value = editValues[editKey]
+    if (!value) return
+    setSaving(editKey)
+    try {
+      const res = await fetch('/api/admin/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page: 'social', section: 'links', key, value }),
+      })
+      const data = await res.json()
+      if (!data.success) throw new Error(data.error)
+      setContentMap(prev => ({
+        ...prev,
+        social: { ...prev.social, links: { ...(prev.social?.links || {}), [key]: value } }
+      }))
+      setEditValues(prev => { const n = { ...prev }; delete n[editKey]; return n })
+      setEditingLink(null)
+      showToast('Link updated!')
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Failed to save', 'error')
+    } finally {
+      setSaving(null)
+    }
+  }
+
+  const renderSocialTab = () => (
+    <div className="space-y-6">
+      {/* Existing links */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 className="font-garamond text-lg font-semibold text-gray-800">Active Social Links</h3>
+          <span className="text-xs text-gray-400">{socialLinks.length} links</span>
+        </div>
+        {socialLinks.length === 0 ? (
+          <div className="p-8 text-center text-gray-400 text-sm">No social links yet. Add one below.</div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {socialLinks.map(link => {
+              const editKey = `social___links___${link.key}`
+              const isDirty = editValues[editKey] !== undefined
+              const isSaving = saving === editKey
+              const isEditing = editingLink === link.key
+
+              return (
+                <div key={link.key} className="px-5 py-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-2xl">{link.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-700">{link.label}</p>
+                      {!isEditing && (
+                        <p className="text-xs text-gray-400 truncate">{link.url}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <button
+                        onClick={() => setEditingLink(isEditing ? null : link.key)}
+                        className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                      >
+                        {isEditing ? 'Cancel' : '✏️ Edit'}
+                      </button>
+                      <button
+                        onClick={() => deleteSocialLink(link.key)}
+                        disabled={deletingKey === link.key}
+                        className="text-xs px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                      >
+                        {deletingKey === link.key ? '⏳' : '🗑'}
+                      </button>
+                    </div>
+                  </div>
+                  {isEditing && (
+                    <div className="flex gap-2 mt-2">
+                      <input
+                        type="url"
+                        value={isDirty ? editValues[editKey] : link.url}
+                        onChange={e => setValue('social', 'links', link.key, e.target.value)}
+                        placeholder={PLATFORMS[link.platform]?.placeholder || 'https://...'}
+                        className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200"
+                      />
+                      <button
+                        onClick={() => saveSocialLink(link.key)}
+                        disabled={!isDirty || isSaving}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isDirty ? 'bg-amber-500 text-white hover:bg-amber-600' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                      >
+                        {isSaving ? '⏳' : '💾 Save'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Add new link */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+        <h3 className="font-garamond text-lg font-semibold text-gray-800 mb-1">Add New Social Link</h3>
+        <p className="text-gray-500 text-xs mb-4">Add a new platform link to your website footer and social sections.</p>
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Platform</label>
+              <select
+                value={addPlatform}
+                onChange={e => { setAddPlatform(e.target.value); setAddLabel('') }}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 bg-white"
+              >
+                {Object.entries(PLATFORMS).map(([key, p]) => (
+                  <option key={key} value={key}>{p.icon} {p.label}</option>
+                ))}
+              </select>
+            </div>
+            {addPlatform === 'custom' && (
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Custom Label</label>
+                <input
+                  type="text"
+                  value={addLabel}
+                  onChange={e => setAddLabel(e.target.value)}
+                  placeholder="e.g. Pinterest, TikTok..."
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
+                />
+              </div>
+            )}
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">URL</label>
+            <input
+              type="url"
+              value={addUrl}
+              onChange={e => setAddUrl(e.target.value)}
+              placeholder={PLATFORMS[addPlatform]?.placeholder || 'https://...'}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
+            />
+          </div>
+          <button
+            onClick={addSocialLink}
+            disabled={addingLink || !addUrl.trim()}
+            className="px-5 py-2 rounded-lg bg-krishna-blue text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {addingLink ? '⏳ Adding...' : '+ Add Link'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+
+  // ─── Haridas Photo Upload ─────────────────────────────────────────────────
+
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -110,7 +339,6 @@ export default function ContentEditorPage() {
       const url = data.url
       setPhotoPreview(url)
 
-      // Save URL to site_content
       await fetch('/api/admin/content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -124,6 +352,46 @@ export default function ContentEditorPage() {
       if (photoInputRef.current) photoInputRef.current.value = ''
     }
   }
+
+  const renderHaridasPhotoUpload = () => (
+    <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-6">
+      <h3 className="font-garamond text-lg font-semibold text-gray-800 mb-1">Profile Photo</h3>
+      <p className="text-gray-500 text-xs mb-4">Upload or replace Hari Das&apos;s profile photo.</p>
+      <div className="flex items-start gap-6 flex-wrap">
+        <div className="flex-shrink-0">
+          {photoPreview ? (
+            <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-amber-300 shadow">
+              <Image src={photoPreview} alt="Haridas profile" fill className="object-cover" />
+            </div>
+          ) : (
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-3xl font-garamond font-semibold select-none shadow">
+              H
+            </div>
+          )}
+          {photoPreview && <p className="text-xs text-center text-gray-400 mt-1">Current photo</p>}
+        </div>
+        <div className="flex-1 min-w-48">
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/avif"
+            onChange={handlePhotoUpload}
+            className="hidden"
+            id="haridas-photo-upload"
+          />
+          <label
+            htmlFor="haridas-photo-upload"
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-all ${
+              photoUploading ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-krishna-blue text-white hover:opacity-90 hover:shadow-md'
+            }`}
+          >
+            {photoUploading ? '⏳ Uploading...' : '📸 Upload New Photo'}
+          </label>
+          <p className="text-xs text-gray-400 mt-2">Max 5MB · JPEG, PNG, or WebP</p>
+        </div>
+      </div>
+    </div>
+  )
 
   const renderField = (page: string, section: string, key: string, isLong = false) => {
     const fieldKey = `${page}___${section}___${key}`
@@ -162,58 +430,9 @@ export default function ContentEditorPage() {
     )
   }
 
-  const renderHaridasPhotoUpload = () => (
-    <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-6">
-      <h3 className="font-garamond text-lg font-semibold text-gray-800 mb-1">Profile Photo</h3>
-      <p className="text-gray-500 text-xs mb-4">Upload or replace Hari Das's profile photo. Shown in the Haridas page hero section.</p>
-      <div className="flex items-start gap-6 flex-wrap">
-        {/* Preview */}
-        <div className="flex-shrink-0">
-          {photoPreview ? (
-            <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-amber-300 shadow">
-              <Image src={photoPreview} alt="Haridas profile" fill className="object-cover" />
-            </div>
-          ) : (
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-3xl font-garamond font-semibold select-none shadow">
-              H
-            </div>
-          )}
-          {photoPreview && (
-            <p className="text-xs text-center text-gray-400 mt-1">Current photo</p>
-          )}
-        </div>
-        {/* Upload */}
-        <div className="flex-1 min-w-48">
-          <input
-            ref={photoInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/avif"
-            onChange={handlePhotoUpload}
-            className="hidden"
-            id="haridas-photo-upload"
-          />
-          <label
-            htmlFor="haridas-photo-upload"
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-all ${
-              photoUploading
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-krishna-blue text-white hover:opacity-90 hover:shadow-md'
-            }`}
-          >
-            {photoUploading ? '⏳ Uploading...' : '📸 Upload New Photo'}
-          </label>
-          <p className="text-xs text-gray-400 mt-2">Max 5MB · JPEG, PNG, or WebP</p>
-          {photoPreview && (
-            <p className="text-xs text-green-600 mt-1 break-all">
-              ✓ Photo saved to profile
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-
   const renderSection = (page: string) => {
+    if (page === 'social') return renderSocialTab()
+
     const sections = contentMap[page] || {}
     const hasContent = Object.keys(sections).length > 0
 
@@ -256,7 +475,7 @@ export default function ContentEditorPage() {
         <p className="text-gray-500 text-sm mt-1">Edit all website content without touching code. Changes apply instantly.</p>
       </div>
 
-      {/* Tabs — scrollable on mobile */}
+      {/* Tabs */}
       <div className="flex gap-2 flex-wrap mb-6">
         {TABS.map(tab => (
           <button
@@ -283,8 +502,6 @@ export default function ContentEditorPage() {
                 <div className="space-y-3">
                   <div className="h-4 w-24 bg-gray-200 rounded" />
                   <div className="h-10 bg-gray-200 rounded-lg" />
-                  <div className="h-4 w-24 bg-gray-200 rounded" />
-                  <div className="h-24 bg-gray-200 rounded-lg" />
                 </div>
               </div>
             ))}

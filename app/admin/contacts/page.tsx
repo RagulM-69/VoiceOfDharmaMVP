@@ -42,12 +42,21 @@ export default function ContactsPage() {
   const deleteContact = async (id: string) => {
     if (!confirm('Delete this contact submission? This cannot be undone.')) return
     setDeleting(id)
-    const supabase = createSupabaseClient()
-    await supabase.from('contact_submissions').delete().eq('id', id)
-    setContacts(prev => prev.filter(c => c.id !== id))
-    if (selected?.id === id) setSelected(null)
-    setDeleting(null)
-    showToast('Deleted')
+    try {
+      const res = await fetch('/api/admin/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'contact_submissions', id }),
+      })
+      if (!res.ok) throw new Error('Delete failed')
+      setContacts(prev => prev.filter(c => c.id !== id))
+      if (selected?.id === id) setSelected(null)
+      showToast('Deleted successfully')
+    } catch {
+      showToast('Failed to delete. Please try again.', false)
+    } finally {
+      setDeleting(null)
+    }
   }
 
   const filtered = useMemo(() => {

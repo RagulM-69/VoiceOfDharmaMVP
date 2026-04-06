@@ -19,6 +19,13 @@ export default function DonationInterestsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [purposeFilter, setPurposeFilter] = useState('all')
+  const [deleting, setDeleting] = useState<string | null>(null)
+  const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null)
+
+  const showToast = (msg: string, ok = true) => {
+    setToast({ msg, ok })
+    setTimeout(() => setToast(null), 3000)
+  }
 
   useEffect(() => { fetchInterests() }, [])
 
@@ -31,6 +38,25 @@ export default function DonationInterestsPage() {
       .order('created_at', { ascending: false })
     setInterests((data as DonationInterest[]) || [])
     setLoading(false)
+  }
+
+  const deleteInterest = async (id: string) => {
+    if (!confirm('Delete this donation interest record? This cannot be undone.')) return
+    setDeleting(id)
+    try {
+      const res = await fetch('/api/admin/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'donation_interests', id }),
+      })
+      if (!res.ok) throw new Error('Delete failed')
+      setInterests(prev => prev.filter(i => i.id !== id))
+      showToast('Deleted successfully')
+    } catch {
+      showToast('Failed to delete. Please try again.', false)
+    } finally {
+      setDeleting(null)
+    }
   }
 
   const filtered = useMemo(() => {
@@ -68,6 +94,12 @@ export default function DonationInterestsPage() {
 
   return (
     <div className="p-6 lg:p-8">
+      {toast && (
+        <div className={`fixed top-4 right-4 px-5 py-3 rounded-lg shadow-xl z-50 text-sm text-white font-medium ${toast.ok ? 'bg-green-600' : 'bg-red-600'}`}>
+          {toast.msg}
+        </div>
+      )}
+
       <div className="mb-6 flex items-start justify-between flex-wrap gap-4">
         <div>
           <h1 className="font-garamond text-3xl font-semibold text-gray-800">Donation Interests</h1>
@@ -120,7 +152,7 @@ export default function DonationInterestsPage() {
             <table className="w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
-                  {['Name', 'Email', 'Phone', 'Amount', 'Cause', 'Message', 'Date'].map(h => (
+                  {['Name', 'Email', 'Phone', 'Amount', 'Cause', 'Message', 'Date', ''].map(h => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
@@ -144,6 +176,15 @@ export default function DonationInterestsPage() {
                     <td className="px-4 py-3 text-gray-500 max-w-xs truncate">{i.message || '—'}</td>
                     <td className="px-4 py-3 text-gray-400 whitespace-nowrap text-xs">
                       {new Date(i.created_at).toLocaleDateString('en-IN')}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => deleteInterest(i.id)}
+                        disabled={deleting === i.id}
+                        className="px-3 py-1 rounded-lg border border-red-200 text-red-600 text-xs font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
+                      >
+                        {deleting === i.id ? '⏳' : '🗑 Delete'}
+                      </button>
                     </td>
                   </tr>
                 ))}
