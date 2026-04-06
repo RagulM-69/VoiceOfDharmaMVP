@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface FormData {
@@ -16,12 +16,51 @@ interface FormErrors {
   phone?: string
 }
 
+const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
+const RECAPTCHA_ENABLED = !!SITE_KEY
+
+declare global {
+  interface Window {
+    grecaptcha: {
+      ready: (cb: () => void) => void
+      execute: (siteKey: string, opts: { action: string }) => Promise<string>
+    }
+  }
+}
+
 export default function ContactForm() {
   const [formData, setFormData] = useState<FormData>({ name: '', email: '', phone: '', message: '' })
   const [errors, setErrors] = useState<FormErrors>({})
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [recaptchaReady, setRecaptchaReady] = useState(false)
+
+  // Load reCAPTCHA script once
+  useEffect(() => {
+    if (!RECAPTCHA_ENABLED) return
+    if (document.querySelector(`script[src*="recaptcha"]`)) {
+      window.grecaptcha?.ready(() => setRecaptchaReady(true))
+      return
+    }
+    const script = document.createElement('script')
+    script.src = `https://www.google.com/recaptcha/api.js?render=${SITE_KEY}`
+    script.async = true
+    script.defer = true
+    script.onload = () => {
+      window.grecaptcha.ready(() => setRecaptchaReady(true))
+    }
+    document.head.appendChild(script)
+  }, [])
+
+  const getRecaptchaToken = useCallback(async (): Promise<string> => {
+    if (!RECAPTCHA_ENABLED || !recaptchaReady) return ''
+    try {
+      return await window.grecaptcha.execute(SITE_KEY, { action: 'contact_form' })
+    } catch {
+      return ''
+    }
+  }, [recaptchaReady])
 
   const validate = (): FormErrors => {
     const e: FormErrors = {}
@@ -47,15 +86,7 @@ export default function ContactForm() {
     setErrorMsg(null)
 
     try {
-      let recaptchaToken = 'dev_token'
-      if (typeof window !== 'undefined' && (window as unknown as { grecaptcha?: { execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha) {
-        try {
-          recaptchaToken = await (window as unknown as { grecaptcha: { execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha.execute(
-            process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '',
-            { action: 'contact' }
-          )
-        } catch { }
-      }
+      const recaptchaToken = await getRecaptchaToken()
 
       const res = await fetch('/api/contact', {
         method: 'POST',
@@ -91,10 +122,6 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
-      {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
-        <script src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`} async defer />
-      )}
-
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
         <input type="text" value={formData.name} onChange={(e) => updateField('name', e.target.value)} placeholder="Your name" className={`form-input ${errors.name ? 'error' : ''}`} maxLength={100} />
@@ -132,7 +159,9 @@ export default function ContactForm() {
         style={{ background: 'linear-gradient(135deg, #C8960C, #F5A623)' }}>
         {loading ? 'Sending...' : 'Send Message'}
       </button>
-      <p className="text-xs text-gray-400 text-center">Protected by reCAPTCHA</p>
+      {RECAPTCHA_ENABLED && (
+        <p className="text-xs text-gray-400 text-center">Protected by reCAPTCHA</p>
+      )}
     </form>
   )
 }

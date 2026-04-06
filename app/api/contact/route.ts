@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const captchaResult = await verifyRecaptcha(body.recaptchaToken)
     if (!captchaResult.success) {
       return NextResponse.json(
-        { error: 'reCAPTCHA verification failed. Please try again.' },
+        { error: 'Verification failed. Please try again.' },
         { status: 400 }
       )
     }
