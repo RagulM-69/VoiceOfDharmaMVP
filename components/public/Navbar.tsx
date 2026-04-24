@@ -13,10 +13,19 @@ const navLinks = [
   { href: '/contact',    label: 'Contact' },
 ]
 
-export default function Navbar() {
+interface NavbarProps {
+  /** 'dark' = deep blue bg with white text (home hero).
+   *  'light' = cream bg with dark text (all other pages). Default: 'light' */
+  variant?: 'light' | 'dark'
+}
+
+export default function Navbar({ variant = 'light' }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
+
+  const [pastHero, setPastHero] = useState(false)
+  const isDark = variant === 'dark' && !pastHero
 
   // Check if link is active — exact match for '/', prefix match for others
   const isActive = (href: string) => {
@@ -25,7 +34,11 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20)
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+      // ~580px covers: navbar height + 40px top pad + 520px card + 40px bottom = hero section
+      setPastHero(window.scrollY > 580)
+    }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -41,9 +54,22 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? 'bg-white/95 backdrop-blur-sm shadow-sm py-3' : 'bg-transparent py-5'
-        }`}
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        style={isDark ? {
+          // ── Dark variant (home page) ──────────────────────────────
+          background: scrolled ? 'rgba(10,31,68,0.98)' : '#0A1F44',
+          borderBottom: '1px solid rgba(200,150,12,0.3)',
+          boxShadow: scrolled ? '0 2px 12px rgba(0,0,0,0.3)' : 'none',
+          paddingTop: scrolled ? '0.6rem' : '0.9rem',
+          paddingBottom: scrolled ? '0.6rem' : '0.9rem',
+        } : {
+          // ── Light variant (all other pages) ──────────────────────
+          background: '#FDF6EC',
+          borderBottom: '1px solid rgba(200,150,12,0.18)',
+          boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
+          paddingTop: scrolled ? '0.6rem' : '0.9rem',
+          paddingBottom: scrolled ? '0.6rem' : '0.9rem',
+        }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Logo */}
@@ -51,7 +77,7 @@ export default function Navbar() {
             <span className="text-2xl font-garamond font-semibold tracking-wide" style={{ color: '#C8960C' }}>
               Voice of Dharma
             </span>
-            <span className={`text-xs font-inter tracking-widest uppercase transition-colors ${scrolled ? 'text-gray-500' : 'text-gray-300'}`}>
+            <span className={`text-xs font-inter tracking-widest uppercase ${isDark ? 'text-gray-300' : 'text-gray-400'}`}>
               Foundation
             </span>
           </Link>
@@ -65,9 +91,9 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={`relative text-sm font-medium tracking-wide transition-colors duration-200 py-1 ${
-                    active
-                      ? scrolled ? 'text-amber-600' : 'text-amber-400'
-                      : scrolled ? 'text-gray-700 hover:text-amber-600' : 'text-white hover:text-amber-300'
+                    isDark
+                      ? active ? 'text-amber-400' : 'text-white/80 hover:text-amber-300'
+                      : active ? 'text-amber-600' : 'text-gray-700 hover:text-amber-600'
                   }`}
                 >
                   {link.label}
@@ -98,9 +124,9 @@ export default function Navbar() {
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
           >
-            <span className={`block w-6 h-0.5 transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-2' : ''} ${scrolled ? 'bg-gray-700' : 'bg-white'}`} />
-            <span className={`block w-6 h-0.5 transition-all duration-300 ${menuOpen ? 'opacity-0' : ''} ${scrolled ? 'bg-gray-700' : 'bg-white'}`} />
-            <span className={`block w-6 h-0.5 transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-2' : ''} ${scrolled ? 'bg-gray-700' : 'bg-white'}`} />
+            <span className={`block w-6 h-0.5 transition-all duration-300 ${isDark ? 'bg-white' : 'bg-gray-700'} ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`block w-6 h-0.5 transition-all duration-300 ${isDark ? 'bg-white' : 'bg-gray-700'} ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-6 h-0.5 transition-all duration-300 ${isDark ? 'bg-white' : 'bg-gray-700'} ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
           </button>
         </div>
       </header>

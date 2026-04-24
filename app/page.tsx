@@ -58,7 +58,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar variant="dark" />
       <main>
 
         {/* ── Hero Slider ── */}
