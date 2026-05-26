@@ -85,9 +85,6 @@ const DEFAULT_QUICK_LINKS = [
   { href: '/haridas',    label: 'Haridas' },
   { href: '/donate',     label: 'Donate' },
   { href: '/contact',    label: 'Contact' },
-  { href: '/privacy',    label: 'Privacy Policy' },
-  { href: '/terms',      label: 'Terms of Service' },
-  { href: '/refund',     label: 'Refund Policy' },
 ]
 
 export default function Footer({ settings, content }: FooterProps) {
@@ -186,8 +183,20 @@ export default function Footer({ settings, content }: FooterProps) {
         </div>
 
         {/* ── Bottom bar ── */}
-        <div className="mt-12 pt-6 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+        <div className="mt-12 pt-6 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+          {/* Left: copyright */}
           <p>© {new Date().getFullYear()} Voice of Dharma Foundation. All rights reserved.</p>
+
+          {/* Centre: legal links */}
+          <div className="flex items-center gap-4">
+            <Link href="/privacy" className="hover:text-amber-400 transition-colors">Privacy Policy</Link>
+            <span className="text-gray-700">·</span>
+            <Link href="/terms" className="hover:text-amber-400 transition-colors">Terms of Service</Link>
+            <span className="text-gray-700">·</span>
+            <Link href="/refund" className="hover:text-amber-400 transition-colors">Refund Policy</Link>
+          </div>
+
+          {/* Right: built-with text */}
           <p>{bottomText}</p>
         </div>
       </div>
