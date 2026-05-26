@@ -33,6 +33,10 @@ export interface SiteSettings {
   address?: string
   registrationNumber?: string
   pan?: string
+  // Contact page fields
+  contactHeroTitle?: string
+  contactHeroSubtitle?: string
+  contactSidebarQuote?: { text?: string; reference?: string }
   socialLinks?: {
     youtube?: string
     instagram?: string
@@ -46,6 +50,11 @@ export interface SiteSettings {
 }
 
 // ── Home Page ─────────────────────────────────────────────────────────────────
+export interface QuoteBanner {
+  text?: string
+  reference?: string
+}
+
 export interface HomePage {
   _id: string
   heroGitaQuote?: string
@@ -55,6 +64,10 @@ export interface HomePage {
   mission?: string
   whyDharma?: string
   whyVOD?: string
+  quoteBanner1?: QuoteBanner
+  quoteBanner2?: QuoteBanner
+  quoteBanner3?: QuoteBanner
+  closingQuote?: QuoteBanner
   supportHeading?: string
   supportBody?: string
   connectHeading?: string
@@ -89,6 +102,18 @@ export interface SpiritualPage {
   modernBody?: string
   visionHeading?: string
   visionBody?: string
+  // Philosophy-only extended sections
+  devotionHeading?: string
+  devotionBody?: string
+  knowledgeHeading?: string
+  knowledgeBody?: string
+  integrationHeading?: string
+  integrationBody?: string
+  livingProcessHeading?: string
+  livingProcessBody?: string
+  closingQuoteLines?: string[]
+  closingQuoteTranslation?: string[]
+  closingQuoteSource?: string
   serviceHeading?: string
   serviceBody?: string
   seo?: SeoFields
@@ -158,7 +183,27 @@ export interface DonatePage {
   gyanHeading?: string
   gyanSubheading?: string
   gyanBody?: string
+  formHeading?: string
+  donationAmounts?: number[]
   closingText?: string
+  seo?: SeoFields
+}
+
+// ── Activities Page Singleton ─────────────────────────────────────────────────
+export interface ActivitiesPage {
+  _id: string
+  heroTitle?: string
+  heroSubtitle?: string
+  pageQuote?: { text?: string; reference?: string }
+  seo?: SeoFields
+}
+
+// ── Blog Page Singleton ───────────────────────────────────────────────────────
+export interface BlogPage {
+  _id: string
+  heroTitle?: string
+  heroSubtitle?: string
+  pageQuote?: { text?: string; reference?: string }
   seo?: SeoFields
 }
 

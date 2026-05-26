@@ -81,6 +81,10 @@ export async function getHomePage(): Promise<HomePage | null> {
       mission,
       whyDharma,
       whyVOD,
+      quoteBanner1 { text, reference },
+      quoteBanner2 { text, reference },
+      quoteBanner3 { text, reference },
+      closingQuote  { text, reference },
       supportHeading,
       supportBody,
       connectHeading,
@@ -130,6 +134,17 @@ export async function getSpiritualPage(slug: string): Promise<SpiritualPage | nu
       modernBody,
       visionHeading,
       visionBody,
+      devotionHeading,
+      devotionBody,
+      knowledgeHeading,
+      knowledgeBody,
+      integrationHeading,
+      integrationBody,
+      livingProcessHeading,
+      livingProcessBody,
+      closingQuoteLines,
+      closingQuoteTranslation,
+      closingQuoteSource,
       serviceHeading,
       serviceBody,
       ${SEO_FIELDS}
@@ -202,7 +217,45 @@ export async function getDonatePage(): Promise<DonatePage | null> {
       karmaHeading, karmaSubheading, karmaBody,
       bhaktiHeading, bhaktiSubheading, bhaktiBody,
       gyanHeading, gyanSubheading, gyanBody,
+      formHeading,
+      donationAmounts,
       closingText,
+      ${SEO_FIELDS}
+    }`,
+    {},
+    { next: { revalidate: 3600 } }
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ACTIVITIES PAGE SINGLETON
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getActivitiesPage(): Promise<any | null> {
+  return sanityServerClient.fetch(
+    `*[_type == "activitiesPage" && ${NO_DRAFTS}][0] {
+      _id,
+      heroTitle,
+      heroSubtitle,
+      pageQuote { text, reference },
+      ${SEO_FIELDS}
+    }`,
+    {},
+    { next: { revalidate: 3600 } }
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BLOG PAGE SINGLETON
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getBlogPage(): Promise<any | null> {
+  return sanityServerClient.fetch(
+    `*[_type == "blogPage" && ${NO_DRAFTS}][0] {
+      _id,
+      heroTitle,
+      heroSubtitle,
+      pageQuote { text, reference },
       ${SEO_FIELDS}
     }`,
     {},
@@ -232,7 +285,6 @@ export async function getActivities(limit = 24): Promise<Activity[]> {
       publishedAt
     }`,
     {},
-    // Short revalidation so new activities appear quickly
     { next: { revalidate: 60 } }
   )
 }

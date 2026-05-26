@@ -24,6 +24,11 @@ export default async function ContactPage() {
   const phone   = settings?.phone   ?? ''
   const address = settings?.address ?? ''
 
+  const contactTitle    = settings?.contactHeroTitle    ?? 'Contact Us'
+  const contactSubtitle = settings?.contactHeroSubtitle ?? "We'd love to hear from you."
+  const sidebarQuote    = settings?.contactSidebarQuote?.text      ?? 'A person who is not disturbed in mind, even amidst the threefold miseries and who is not elated when there is happiness, and who is free from attachment, fear, and anger, is called a sage of steady mind.'
+  const sidebarQuoteRef = settings?.contactSidebarQuote?.reference ?? 'Bhagavad Gita 2.56'
+
   return (
     <>
       <Navbar />
@@ -37,8 +42,8 @@ export default async function ContactPage() {
           <div className="relative">
             <SectionWrapper>
               <div className="text-amber-400/50 text-4xl mb-4 select-none font-garamond">॥</div>
-              <h1 className="font-garamond text-5xl md:text-6xl font-semibold text-white mb-4">Contact Us</h1>
-              <p className="text-gray-300 text-lg max-w-xl mx-auto">We&apos;d love to hear from you.</p>
+              <h1 className="font-garamond text-5xl md:text-6xl font-semibold text-white mb-4">{contactTitle}</h1>
+              <p className="text-gray-300 text-lg max-w-xl mx-auto">{contactSubtitle}</p>
             </SectionWrapper>
           </div>
         </section>
@@ -73,9 +78,9 @@ export default async function ContactPage() {
 
                 <div className="mt-10 p-6 rounded-xl" style={{ background: 'rgba(10,31,68,0.05)', borderLeft: '4px solid #C8960C' }}>
                   <p className="font-garamond text-lg italic text-krishna-blue leading-relaxed">
-                    &ldquo;A person who is not disturbed in mind, even amidst the threefold miseries and who is not elated when there is happiness, and who is free from attachment, fear, and anger, is called a sage of steady mind.&rdquo;
+                    &ldquo;{sidebarQuote}&rdquo;
                   </p>
-                  <p className="text-amber-600 text-sm mt-2">— Bhagavad Gita 2.56</p>
+                  <p className="text-amber-600 text-sm mt-2">— {sidebarQuoteRef}</p>
                 </div>
               </SectionWrapper>
 

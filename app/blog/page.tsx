@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getBlogPosts, getSiteSettings } from '@/lib/sanity/queries'
+import { getBlogPosts, getBlogPage, getSiteSettings } from '@/lib/sanity/queries'
 import { urlFor } from '@/lib/sanity/image'
 import Navbar from '@/components/public/Navbar'
 import Footer from '@/components/public/Footer'
@@ -82,10 +82,16 @@ function EmptyBlog() {
 }
 
 export default async function BlogPage() {
-  const [posts, settings] = await Promise.all([
+  const [posts, blogPageData, settings] = await Promise.all([
     getBlogPosts(24).catch(() => [] as BlogPost[]),
+    getBlogPage().catch(() => null),
     getSiteSettings(),
   ])
+
+  const heroTitle    = blogPageData?.heroTitle    ?? 'Blog'
+  const heroSubtitle = blogPageData?.heroSubtitle ?? 'Reflections on dharma, consciousness, and the path within'
+  const quoteText    = blogPageData?.pageQuote?.text      ?? 'J\u00f1\u0101na\u1e43 vij\u00f1\u0101nam \u0101stikyam brahma karma svabh\u0101vajam'
+  const quoteRef     = blogPageData?.pageQuote?.reference ?? 'Bhagavad Gita 18.42'
 
   const featured = posts.filter((p) => p.isFeatured)
   const regular  = posts.filter((p) => !p.isFeatured)
@@ -103,9 +109,9 @@ export default async function BlogPage() {
           <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionWrapper>
               <div className="text-amber-400/50 text-5xl mb-6 select-none font-garamond">॥</div>
-              <h1 className="font-garamond text-5xl md:text-6xl font-semibold text-white mb-5">Blog</h1>
+              <h1 className="font-garamond text-5xl md:text-6xl font-semibold text-white mb-5">{heroTitle}</h1>
               <p className="font-garamond text-xl md:text-2xl text-white/60 leading-relaxed">
-                Reflections on dharma, consciousness, and the path within
+                {heroSubtitle}
               </p>
             </SectionWrapper>
           </div>
@@ -115,9 +121,9 @@ export default async function BlogPage() {
         <div className="py-10 border-y border-amber-400/20" style={{ background: 'rgba(10,31,68,0.97)' }}>
           <div className="max-w-2xl mx-auto px-6 text-center">
             <p className="font-garamond text-xl md:text-2xl italic text-amber-300/90 leading-relaxed">
-              &ldquo;Jñānaṁ vijñānam āstikyaṁ brahma karma svabhāvajam — Knowledge, wisdom and faith constitute the nature of the brahmin.&rdquo;
+              &ldquo;{quoteText}&rdquo;
             </p>
-            <p className="text-amber-500/50 text-xs tracking-widest uppercase mt-3">— Bhagavad Gita 18.42</p>
+            <p className="text-amber-500/50 text-xs tracking-widest uppercase mt-3">— {quoteRef}</p>
           </div>
         </div>
 

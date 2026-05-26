@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getActivities, getSiteSettings } from '@/lib/sanity/queries'
+import { getActivities, getActivitiesPage, getSiteSettings } from '@/lib/sanity/queries'
 import { urlFor } from '@/lib/sanity/image'
 import Navbar from '@/components/public/Navbar'
 import Footer from '@/components/public/Footer'
@@ -143,10 +143,16 @@ function EmptyFeed() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default async function ActivitiesPage() {
-  const [activities, settings] = await Promise.all([
+  const [activities, activitiesPageData, settings] = await Promise.all([
     getActivities(24).catch(() => [] as Activity[]),
+    getActivitiesPage().catch(() => null),
     getSiteSettings(),
   ])
+
+  const heroTitle    = activitiesPageData?.heroTitle    ?? 'Activities'
+  const heroSubtitle = activitiesPageData?.heroSubtitle ?? 'Service, devotion, and wisdom \u2014 every action an offering'
+  const quoteText    = activitiesPageData?.pageQuote?.text      ?? 'Yoga\u1e25 karmasu kau\u015balam \u2014 Excellence in action is Yoga.'
+  const quoteRef     = activitiesPageData?.pageQuote?.reference ?? 'Bhagavad Gita 2.50'
 
   return (
     <>
@@ -161,9 +167,9 @@ export default async function ActivitiesPage() {
           <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionWrapper>
               <div className="text-amber-400/50 text-5xl mb-6 select-none font-garamond">॥</div>
-              <h1 className="font-garamond text-5xl md:text-6xl font-semibold text-white mb-5">Activities</h1>
+              <h1 className="font-garamond text-5xl md:text-6xl font-semibold text-white mb-5">{heroTitle}</h1>
               <p className="font-garamond text-xl md:text-2xl text-white/60 leading-relaxed">
-                Service, devotion, and wisdom — every action an offering
+                {heroSubtitle}
               </p>
             </SectionWrapper>
           </div>
@@ -173,9 +179,9 @@ export default async function ActivitiesPage() {
         <div className="py-10 border-y border-amber-400/20" style={{ background: 'rgba(10,31,68,0.97)' }}>
           <div className="max-w-2xl mx-auto px-6 text-center">
             <p className="font-garamond text-xl md:text-2xl italic text-amber-300/90 leading-relaxed">
-              &ldquo;Yogaḥ karmasu kauśalam — Excellence in action is Yoga.&rdquo;
+              &ldquo;{quoteText}&rdquo;
             </p>
-            <p className="text-amber-500/50 text-xs tracking-widest uppercase mt-3">— Bhagavad Gita 2.50</p>
+            <p className="text-amber-500/50 text-xs tracking-widest uppercase mt-3">— {quoteRef}</p>
           </div>
         </div>
 

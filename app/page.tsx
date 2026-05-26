@@ -55,6 +55,16 @@ export default async function HomePage() {
   const connectH     = page?.connectHeading   ?? 'Join the Community'
   const connectB     = page?.connectBody      ?? ''
 
+  // Quote banners — editable in Sanity, with sensible defaults
+  const q1Text = page?.quoteBanner1?.text      ?? 'By devotion, by selfless action, and by knowledge, the wise come to understand the deeper truth of life.'
+  const q1Ref  = page?.quoteBanner1?.reference ?? 'Bhagavad Gita'
+  const q2Text = page?.quoteBanner2?.text      ?? 'Whenever righteousness declines and disorder prevails, I manifest to restore balance.'
+  const q2Ref  = page?.quoteBanner2?.reference ?? 'Bhagavad Gita 4.7'
+  const q3Text = page?.quoteBanner3?.text      ?? 'There is nothing in this world as purifying as knowledge.'
+  const q3Ref  = page?.quoteBanner3?.reference ?? 'Bhagavad Gita 4.38'
+  const cqText = page?.closingQuote?.text      ?? 'Established in yoga, perform your actions with balance and clarity.'
+  const cqRef  = page?.closingQuote?.reference ?? 'Bhagavad Gita 2.48'
+
   return (
     <>
       <Navbar variant="dark" />
@@ -63,13 +73,13 @@ export default async function HomePage() {
         {/* Hero Slider */}
         <HeroSlider slides={slides} gitaQuote={gitaQuote} gitaQuoteRef={gitaQuoteRef} />
 
-        {/* Quote Banner */}
+        {/* Quote Banner 1 */}
         <div className="py-12 border-b border-amber-400/20" style={{ background: 'rgba(10,31,68,0.98)' }}>
           <div className="max-w-2xl mx-auto px-6 text-center">
             <p className="font-garamond text-xl md:text-2xl italic text-white/80 leading-relaxed">
-              &ldquo;By devotion, by selfless action, and by knowledge, the wise come to understand the deeper truth of life.&rdquo;
+              &ldquo;{q1Text}&rdquo;
             </p>
-            <p className="text-amber-400/70 text-sm mt-3 tracking-wider">— Bhagavad Gita</p>
+            <p className="text-amber-400/70 text-sm mt-3 tracking-wider">— {q1Ref}</p>
           </div>
         </div>
 
@@ -148,13 +158,13 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Gita Quote */}
+        {/* Quote Banner 2 */}
         <div className="py-12 bg-cream border-t border-amber-400/20">
           <div className="max-w-2xl mx-auto px-6 text-center">
             <p className="font-garamond text-xl md:text-2xl italic text-krishna-blue/75 leading-relaxed">
-              &ldquo;Whenever righteousness declines and disorder prevails, I manifest to restore balance.&rdquo;
+              &ldquo;{q2Text}&rdquo;
             </p>
-            <p className="text-amber-600/70 text-sm mt-3 tracking-wider">— Bhagavad Gita 4.7</p>
+            <p className="text-amber-600/70 text-sm mt-3 tracking-wider">— {q2Ref}</p>
           </div>
         </div>
 
@@ -180,13 +190,13 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Quote */}
+        {/* Quote Banner 3 */}
         <div className="py-12" style={{ background: '#0A1F44', borderTop: '1px solid rgba(200,150,12,0.15)' }}>
           <div className="max-w-2xl mx-auto px-6 text-center">
             <p className="font-garamond text-xl md:text-2xl italic text-white/80 leading-relaxed">
-              &ldquo;There is nothing in this world as purifying as knowledge.&rdquo;
+              &ldquo;{q3Text}&rdquo;
             </p>
-            <p className="text-amber-400/70 text-sm mt-3 tracking-wider">— Bhagavad Gita 4.38</p>
+            <p className="text-amber-400/70 text-sm mt-3 tracking-wider">— {q3Ref}</p>
           </div>
         </div>
 
@@ -209,9 +219,9 @@ export default async function HomePage() {
           <div className="max-w-2xl mx-auto px-6 text-center">
             <div className="text-amber-400/30 text-4xl mb-4 font-garamond select-none">&ldquo;</div>
             <p className="font-garamond text-xl md:text-2xl italic text-white/80 leading-relaxed">
-              Established in yoga, perform your actions with balance and clarity.
+              {cqText}
             </p>
-            <p className="text-amber-400/60 text-sm mt-4 tracking-wider">— Bhagavad Gita 2.48</p>
+            <p className="text-amber-400/60 text-sm mt-4 tracking-wider">— {cqRef}</p>
           </div>
         </div>
 
