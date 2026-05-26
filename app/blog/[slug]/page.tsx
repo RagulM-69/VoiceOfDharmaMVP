@@ -9,7 +9,11 @@ import Link from 'next/link'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 3600
+export const revalidate = 60
+
+// CRITICAL: allow new slugs created after build to render via ISR
+// Without this, new blog posts return 404 until the next build
+export const dynamicParams = true
 
 // ── Static params for SSG ─────────────────────────────────────────────────────
 export async function generateStaticParams() {

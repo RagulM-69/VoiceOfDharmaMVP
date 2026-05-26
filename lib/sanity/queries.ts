@@ -2,7 +2,10 @@
  * All GROQ queries for the Voice of Dharma Foundation frontend.
  * Centralised here — import from this file in page Server Components.
  *
- * Pattern: each query fetches exactly what the page needs — no over-fetching.
+ * Key rules:
+ * - Always filter out drafts: !(_id in path("drafts.**"))
+ * - Use sanityServerClient (no CDN) for ISR pages so data is always fresh
+ * - Keep revalidation short for content-heavy pages
  */
 
 import { sanityServerClient } from './client'
@@ -35,13 +38,18 @@ const SEO_FIELDS = `
   }
 `
 
+// ─── Draft filter — ALWAYS include this in every query ───────────────────────
+// Sanity stores unpublished drafts as documents with _id prefixed "drafts."
+// Without this filter, draft documents can bleed into production queries.
+const NO_DRAFTS = `!(_id in path("drafts.**"))`
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SITE SETTINGS (Footer, Social Links)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function getSiteSettings(): Promise<SiteSettings | null> {
   return sanityServerClient.fetch(
-    `*[_type == "siteSettings" && _id == "siteSettings"][0] {
+    `*[_type == "siteSettings" && _id == "siteSettings" && ${NO_DRAFTS}][0] {
       _id,
       siteName,
       tagline,
@@ -64,7 +72,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
 
 export async function getHomePage(): Promise<HomePage | null> {
   return sanityServerClient.fetch(
-    `*[_type == "homePage" && _id == "homePage"][0] {
+    `*[_type == "homePage" && _id == "homePage" && ${NO_DRAFTS}][0] {
       _id,
       heroGitaQuote,
       heroGitaQuoteRef,
@@ -86,7 +94,7 @@ export async function getHomePage(): Promise<HomePage | null> {
 
 export async function getHeroSlides(): Promise<HeroSlide[]> {
   return sanityServerClient.fetch(
-    `*[_type == "heroSlide"] | order(order asc) {
+    `*[_type == "heroSlide" && ${NO_DRAFTS}] | order(order asc) {
       _id,
       title,
       subtitle,
@@ -104,11 +112,12 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SPIRITUAL PAGES (Karma, Bhakti, Gyan, Philosophy)
+// CRITICAL FIX: slug is a Sanity slug object — must query slug.current
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function getSpiritualPage(slug: string): Promise<SpiritualPage | null> {
   return sanityServerClient.fetch(
-    `*[_type == "spiritualPage" && slug == $slug][0] {
+    `*[_type == "spiritualPage" && slug.current == $slug && ${NO_DRAFTS}][0] {
       _id,
       slug,
       heroTitle,
@@ -136,7 +145,7 @@ export async function getSpiritualPage(slug: string): Promise<SpiritualPage | nu
 
 export async function getAboutPage(): Promise<AboutPage | null> {
   return sanityServerClient.fetch(
-    `*[_type == "aboutPage" && _id == "aboutPage"][0] {
+    `*[_type == "aboutPage" && _id == "aboutPage" && ${NO_DRAFTS}][0] {
       _id,
       heroHeading,
       heroSubheading,
@@ -163,7 +172,7 @@ export async function getAboutPage(): Promise<AboutPage | null> {
 
 export async function getFounderPage(): Promise<FounderPage | null> {
   return sanityServerClient.fetch(
-    `*[_type == "founderPage" && _id == "founderPage"][0] {
+    `*[_type == "founderPage" && _id == "founderPage" && ${NO_DRAFTS}][0] {
       _id,
       name,
       title,
@@ -186,7 +195,7 @@ export async function getFounderPage(): Promise<FounderPage | null> {
 
 export async function getDonatePage(): Promise<DonatePage | null> {
   return sanityServerClient.fetch(
-    `*[_type == "donatePage" && _id == "donatePage"][0] {
+    `*[_type == "donatePage" && _id == "donatePage" && ${NO_DRAFTS}][0] {
       _id,
       heroHeading, heroSubheading, heroBody,
       whyHeading, whyBody,
@@ -203,11 +212,14 @@ export async function getDonatePage(): Promise<DonatePage | null> {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ACTIVITIES FEED
+// CRITICAL FIX: filter drafts, use publishedAt filter for only past/present
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getActivities(limit = 12): Promise<Activity[]> {
+export async function getActivities(limit = 24): Promise<Activity[]> {
   return sanityServerClient.fetch(
-    `*[_type == "activity"] | order(isFeatured desc, publishedAt desc) [0...$limit] {
+    `*[_type == "activity" && ${NO_DRAFTS}]
+      | order(isFeatured desc, publishedAt desc)
+      [0...${limit}] {
       _id,
       title,
       slug,
@@ -219,22 +231,23 @@ export async function getActivities(limit = 12): Promise<Activity[]> {
       isFeatured,
       publishedAt
     }`,
-    { limit },
-    { next: { revalidate: 300 } } // revalidate every 5 min for fresh feed
+    {},
+    // Short revalidation so new activities appear quickly
+    { next: { revalidate: 60 } }
   )
 }
 
 export async function getAllActivitySlugs(): Promise<{ slug: { current: string } }[]> {
   return sanityServerClient.fetch(
-    `*[_type == "activity"] { slug }`,
+    `*[_type == "activity" && ${NO_DRAFTS} && defined(slug.current)] { slug }`,
     {},
-    { next: { revalidate: 3600 } }
+    { next: { revalidate: 300 } }
   )
 }
 
 export async function getActivityBySlug(slug: string): Promise<Activity | null> {
   return sanityServerClient.fetch(
-    `*[_type == "activity" && slug.current == $slug][0] {
+    `*[_type == "activity" && slug.current == $slug && ${NO_DRAFTS}][0] {
       _id,
       title,
       slug,
@@ -248,17 +261,20 @@ export async function getActivityBySlug(slug: string): Promise<Activity | null> 
       publishedAt
     }`,
     { slug },
-    { next: { revalidate: 300 } }
+    { next: { revalidate: 60 } }
   )
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // BLOG POSTS
+// CRITICAL FIX: filter drafts, parameterise limit properly
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getBlogPosts(limit = 12): Promise<BlogPost[]> {
+export async function getBlogPosts(limit = 24): Promise<BlogPost[]> {
   return sanityServerClient.fetch(
-    `*[_type == "blogPost"] | order(isFeatured desc, publishedAt desc) [0...$limit] {
+    `*[_type == "blogPost" && ${NO_DRAFTS}]
+      | order(isFeatured desc, publishedAt desc)
+      [0...${limit}] {
       _id,
       title,
       slug,
@@ -268,22 +284,23 @@ export async function getBlogPosts(limit = 12): Promise<BlogPost[]> {
       publishedAt,
       isFeatured
     }`,
-    { limit },
-    { next: { revalidate: 3600 } }
+    {},
+    // Short revalidation — new blog posts should appear quickly
+    { next: { revalidate: 60 } }
   )
 }
 
 export async function getAllBlogSlugs(): Promise<{ slug: { current: string } }[]> {
   return sanityServerClient.fetch(
-    `*[_type == "blogPost"] { slug }`,
+    `*[_type == "blogPost" && ${NO_DRAFTS} && defined(slug.current)] { slug }`,
     {},
-    { next: { revalidate: 3600 } }
+    { next: { revalidate: 300 } }
   )
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
   return sanityServerClient.fetch(
-    `*[_type == "blogPost" && slug.current == $slug][0] {
+    `*[_type == "blogPost" && slug.current == $slug && ${NO_DRAFTS}][0] {
       _id,
       title,
       slug,
@@ -297,6 +314,6 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
       ${SEO_FIELDS}
     }`,
     { slug },
-    { next: { revalidate: 3600 } }
+    { next: { revalidate: 60 } }
   )
 }

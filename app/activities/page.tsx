@@ -8,7 +8,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Activity } from '@/lib/sanity/types'
 
-export const revalidate = 300 // Refresh every 5 min — activities feed is live
+export const revalidate = 60 // New activities appear within 60 seconds
 
 export const metadata: Metadata = {
   title: 'Activities — Voice of Dharma Foundation',

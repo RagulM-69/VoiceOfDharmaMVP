@@ -8,7 +8,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { BlogPost } from '@/lib/sanity/types'
 
-export const revalidate = 3600
+export const revalidate = 60 // New blog posts appear within 60 seconds
 
 export const metadata: Metadata = {
   title: 'Blog — Voice of Dharma Foundation',
