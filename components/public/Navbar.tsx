@@ -6,11 +6,13 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
-  { href: '/',           label: 'Home' },
-  { href: '/about',      label: 'About' },
-  { href: '/philosophy', label: 'Philosophy' },
-  { href: '/haridas',    label: 'Haridas' },
-  { href: '/contact',    label: 'Contact' },
+  { href: '/',            label: 'Home' },
+  { href: '/about',       label: 'About' },
+  { href: '/activities',  label: 'Activities' },
+  { href: '/blog',        label: 'Blog' },
+  { href: '/philosophy',  label: 'Philosophy' },
+  { href: '/haridas',     label: 'Haridas' },
+  { href: '/contact',     label: 'Contact' },
 ]
 
 interface NavbarProps {

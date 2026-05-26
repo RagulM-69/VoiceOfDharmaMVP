@@ -5,11 +5,19 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
+      // Supabase storage (existing)
       {
         protocol: 'https',
         hostname: 'rbfcflciaasjwtjjjosv.supabase.co',
         port: '',
         pathname: '/storage/v1/object/public/**',
+      },
+      // Sanity CDN (new — for all Sanity-hosted images)
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+        port: '',
+        pathname: '/images/**',
       },
     ],
   },

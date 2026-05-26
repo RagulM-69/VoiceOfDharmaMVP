@@ -1,12 +1,15 @@
 import Link from 'next/link'
+import type { SiteSettings } from '@/lib/sanity/types'
 import type { ContentMap } from '@/types'
-import { getContent } from '@/lib/content'
 
 interface FooterProps {
-  content: ContentMap
+  // New: Sanity settings (primary source)
+  settings?: SiteSettings | null
+  // Legacy: Supabase ContentMap (kept for backward compat during migration, will be removed after)
+  content?: ContentMap
 }
 
-// SVG icon map keyed by social link key in DB
+// SVG icon map keyed by social link key
 const SOCIAL_ICONS: Record<string, { label: string; svg: React.ReactNode }> = {
   instagram: {
     label: 'Instagram',
@@ -66,29 +69,33 @@ const SOCIAL_ICONS: Record<string, { label: string; svg: React.ReactNode }> = {
   },
 }
 
-// Fallback icon for unknown platforms
 const DEFAULT_ICON = (
   <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17">
     <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.293 7.294-1.414-1.414L17.585 5H13V3h8z"/>
   </svg>
 )
 
-// Ordered display priority
 const PLATFORM_ORDER = ['instagram', 'youtube', 'facebook', 'whatsapp', 'twitter', 'linkedin', 'telegram']
 
-export default function Footer({ content }: FooterProps) {
-  const tagline = getContent(content, 'footer', 'info', 'tagline', 'Spreading the light of Bhagavad Gita')
-  const email = getContent(content, 'footer', 'info', 'email', 'contact@voiceofdharma.org')
-  const phone = getContent(content, 'footer', 'info', 'phone', '')
-  const address = getContent(content, 'footer', 'info', 'address', '')
-  const regNo = getContent(content, 'footer', 'info', 'registration_number', '')
-  const pan = getContent(content, 'footer', 'info', 'pan', '')
+export default function Footer({ settings, content }: FooterProps) {
+  // Use Sanity settings as primary; fall back to legacy ContentMap if settings absent
+  const tagline = settings?.tagline ?? content?.footer?.info?.tagline ?? 'Spreading the light of Bhagavad Gita'
+  const email   = settings?.email   ?? content?.footer?.info?.email   ?? ''
+  const phone   = settings?.phone   ?? content?.footer?.info?.phone   ?? ''
+  const address = settings?.address ?? content?.footer?.info?.address ?? ''
+  const regNo   = settings?.registrationNumber ?? content?.footer?.info?.registration_number ?? ''
+  const pan     = settings?.pan     ?? content?.footer?.info?.pan     ?? ''
 
-  // Dynamically gather ALL social links from the DB content map
-  const rawSocialLinks = content?.social?.links || {}
+  // Social links — from Sanity settings or legacy ContentMap
+  const rawSocial: Record<string, string> = settings?.socialLinks
+    ? Object.fromEntries(
+        Object.entries(settings.socialLinks).filter(([, v]) => Boolean(v)) as [string, string][]
+      )
+    : (content?.social?.links ?? {})
+
   const socialLinks = [
-    ...PLATFORM_ORDER.filter(k => rawSocialLinks[k]).map(k => ({ key: k, url: rawSocialLinks[k] })),
-    ...Object.entries(rawSocialLinks).filter(([k]) => !PLATFORM_ORDER.includes(k)).map(([k, url]) => ({ key: k, url })),
+    ...PLATFORM_ORDER.filter((k) => rawSocial[k]).map((k) => ({ key: k, url: rawSocial[k] })),
+    ...Object.entries(rawSocial).filter(([k]) => !PLATFORM_ORDER.includes(k)).map(([k, url]) => ({ key: k, url })),
   ]
 
   return (
@@ -102,7 +109,7 @@ export default function Footer({ content }: FooterProps) {
             </h3>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">{tagline}</p>
 
-            {/* Social links — auto-rendered from DB with real SVG logos */}
+            {/* Social links */}
             <div className="flex flex-wrap gap-3">
               {socialLinks.map(({ key, url }) => {
                 const meta = SOCIAL_ICONS[key]
@@ -129,6 +136,9 @@ export default function Footer({ content }: FooterProps) {
             <ul className="space-y-2">
               {[
                 { href: '/', label: 'Home' },
+                { href: '/about', label: 'About' },
+                { href: '/activities', label: 'Activities' },
+                { href: '/blog', label: 'Blog' },
                 { href: '/philosophy', label: 'Philosophy' },
                 { href: '/haridas', label: 'Haridas' },
                 { href: '/donate', label: 'Donate' },
@@ -138,10 +148,7 @@ export default function Footer({ content }: FooterProps) {
                 { href: '/refund', label: 'Refund Policy' },
               ].map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-gray-300 text-sm hover:text-amber-400 transition-colors"
-                  >
+                  <Link href={link.href} className="text-gray-300 text-sm hover:text-amber-400 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -169,7 +176,7 @@ export default function Footer({ content }: FooterProps) {
 
         <div className="mt-12 pt-6 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
           <p>© {new Date().getFullYear()} Voice of Dharma Foundation. All rights reserved.</p>
-          <p>Built with devotion · Secure payments coming soon</p>
+          <p>Content powered by Sanity CMS · Payments by Razorpay</p>
         </div>
       </div>
     </footer>

@@ -1,0 +1,229 @@
+import type { Metadata } from 'next'
+import { getActivities, getSiteSettings } from '@/lib/sanity/queries'
+import { urlFor } from '@/lib/sanity/image'
+import Navbar from '@/components/public/Navbar'
+import Footer from '@/components/public/Footer'
+import SectionWrapper from '@/components/public/SectionWrapper'
+import Image from 'next/image'
+import Link from 'next/link'
+import type { Activity } from '@/lib/sanity/types'
+
+export const revalidate = 300 // Refresh every 5 min — activities feed is live
+
+export const metadata: Metadata = {
+  title: 'Activities — Voice of Dharma Foundation',
+  description: 'Follow our activities — community service, devotional events, and spiritual programmes rooted in the path of Karma, Bhakti, and Gyaan.',
+}
+
+// ── Relative timestamp helper ─────────────────────────────────────────────────
+function timeAgo(dateStr: string): string {
+  const now = Date.now()
+  const then = new Date(dateStr).getTime()
+  const diff = Math.floor((now - then) / 1000)
+
+  if (diff < 60)       return 'Just now'
+  if (diff < 3600)     return `${Math.floor(diff / 60)} min ago`
+  if (diff < 86400)    return `${Math.floor(diff / 3600)} hours ago`
+  if (diff < 604800)   return `${Math.floor(diff / 86400)} days ago`
+  if (diff < 2592000)  return `${Math.floor(diff / 604800)} weeks ago`
+  if (diff < 31536000) return `${Math.floor(diff / 2592000)} months ago`
+  return `${Math.floor(diff / 31536000)} years ago`
+}
+
+// ── Pillar badge colours ──────────────────────────────────────────────────────
+const PILLAR_STYLE: Record<string, { bg: string; text: string; label: string }> = {
+  karma:   { bg: 'rgba(34,197,94,0.15)',   text: '#16a34a', label: '🌱 Karma' },
+  bhakti:  { bg: 'rgba(251,146,60,0.15)',  text: '#ea580c', label: '🪔 Bhakti' },
+  gyan:    { bg: 'rgba(99,102,241,0.15)',  text: '#4f46e5', label: '📖 Gyaan' },
+  general: { bg: 'rgba(200,150,12,0.15)',  text: '#C8960C', label: '🕉️ Dharma' },
+}
+
+// ── Single Activity Card ──────────────────────────────────────────────────────
+function ActivityCard({ activity }: { activity: Activity }) {
+  const pillar = PILLAR_STYLE[activity.pillar] ?? PILLAR_STYLE.general
+  const mainImage = activity.coverImage ?? activity.images?.[0]
+  const extraImages = activity.images?.slice(1, 4) ?? []
+
+  return (
+    <article
+      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-300"
+      aria-label={activity.title}
+    >
+      {/* Primary image */}
+      {mainImage && (
+        <div className="relative w-full h-56 md:h-64 overflow-hidden">
+          <Image
+            src={urlFor(mainImage).width(800).height(450).format('webp').url()}
+            alt={mainImage.alt ?? activity.title}
+            fill
+            className="object-cover transition-transform duration-500 hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 600px"
+          />
+          {activity.isFeatured && (
+            <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ background: 'linear-gradient(135deg, #C8960C, #F5A623)' }}>
+              ⭐ Featured
+            </div>
+          )}
+          {/* Pillar badge */}
+          <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold" style={{ background: pillar.bg, color: pillar.text, backdropFilter: 'blur(8px)', border: `1px solid ${pillar.text}40` }}>
+            {pillar.label}
+          </div>
+        </div>
+      )}
+
+      {/* Extra images strip */}
+      {extraImages.length > 0 && (
+        <div className="grid grid-cols-3 gap-1 px-1 -mt-1">
+          {extraImages.map((img, i) => (
+            <div key={i} className="relative h-20 overflow-hidden rounded">
+              <Image
+                src={urlFor(img).width(300).height(150).format('webp').url()}
+                alt={img.alt ?? `Photo ${i + 2}`}
+                fill className="object-cover"
+                sizes="200px"
+              />
+              {/* Overlay for last image if more exist */}
+              {i === 2 && (activity.images?.length ?? 0) > 4 && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <span className="text-white text-sm font-semibold">+{(activity.images?.length ?? 0) - 4}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Content */}
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <h2 className="font-garamond text-xl font-semibold text-gray-800 leading-snug flex-1">
+            {activity.title}
+          </h2>
+        </div>
+
+        {activity.summary && (
+          <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">{activity.summary}</p>
+        )}
+
+        <div className="flex items-center justify-between text-xs text-gray-400 mt-2 pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
+            <time dateTime={activity.publishedAt}>{timeAgo(activity.publishedAt)}</time>
+          </div>
+          {activity.location && (
+            <span className="flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              {activity.location}
+            </span>
+          )}
+        </div>
+      </div>
+    </article>
+  )
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+function EmptyFeed() {
+  return (
+    <div className="text-center py-20">
+      <div className="text-6xl mb-6">🌿</div>
+      <h2 className="font-garamond text-3xl text-gray-700 mb-4">Activities Coming Soon</h2>
+      <p className="text-gray-500 text-lg max-w-xl mx-auto leading-relaxed">
+        We are preparing to share our activities with you. Service, devotion, and wisdom — our journey continues.
+      </p>
+      <Link href="/donate" className="inline-block mt-8 px-8 py-3 rounded-full font-semibold text-white text-sm transition-all hover:-translate-y-1" style={{ background: 'linear-gradient(135deg, #C8960C, #F5A623)' }}>
+        Support the Mission
+      </Link>
+    </div>
+  )
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+export default async function ActivitiesPage() {
+  const [activities, settings] = await Promise.all([
+    getActivities(24).catch(() => [] as Activity[]),
+    getSiteSettings(),
+  ])
+
+  return (
+    <>
+      <Navbar />
+      <main>
+        {/* Hero */}
+        <section className="relative pt-32 pb-24 text-center overflow-hidden" style={{ background: '#0A1F44' }}>
+          <div className="absolute inset-0">
+            <Image src="/images/activities-hero.png" alt="Activities — Voice of Dharma Foundation" fill className="object-cover opacity-25" priority sizes="100vw" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0A1F44]/60 via-[#0A1F44]/50 to-[#0A1F44]" />
+          </div>
+          <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <SectionWrapper>
+              <div className="text-amber-400/50 text-5xl mb-6 select-none font-garamond">॥</div>
+              <h1 className="font-garamond text-5xl md:text-6xl font-semibold text-white mb-5">Activities</h1>
+              <p className="font-garamond text-xl md:text-2xl text-white/60 leading-relaxed">
+                Service, devotion, and wisdom — every action an offering
+              </p>
+            </SectionWrapper>
+          </div>
+        </section>
+
+        {/* Intro Quote */}
+        <div className="py-10 border-y border-amber-400/20" style={{ background: 'rgba(10,31,68,0.97)' }}>
+          <div className="max-w-2xl mx-auto px-6 text-center">
+            <p className="font-garamond text-xl md:text-2xl italic text-amber-300/90 leading-relaxed">
+              &ldquo;Yogaḥ karmasu kauśalam — Excellence in action is Yoga.&rdquo;
+            </p>
+            <p className="text-amber-500/50 text-xs tracking-widest uppercase mt-3">— Bhagavad Gita 2.50</p>
+          </div>
+        </div>
+
+        {/* Pillar filter legend */}
+        <div className="py-8 bg-white border-b border-gray-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-wrap gap-3 justify-center">
+              {Object.entries(PILLAR_STYLE).map(([key, val]) => (
+                <span key={key} className="px-4 py-1.5 rounded-full text-sm font-medium" style={{ background: val.bg, color: val.text }}>
+                  {val.label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Activities Feed */}
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            {activities.length === 0 ? (
+              <EmptyFeed />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {activities.map((activity) => (
+                  <SectionWrapper key={activity._id} delay={0.05}>
+                    <ActivityCard activity={activity} />
+                  </SectionWrapper>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* CTA */}
+        {activities.length > 0 && (
+          <section className="py-16 text-center" style={{ background: '#0A1F44' }}>
+            <SectionWrapper>
+              <div className="text-amber-400/40 text-4xl mb-4 font-garamond">॥</div>
+              <h2 className="font-garamond text-3xl text-white mb-3">Be Part of Something Meaningful</h2>
+              <p className="text-gray-300 text-base mb-8 max-w-lg mx-auto">Support our activities through donation — every contribution furthers the mission of dharmic service.</p>
+              <Link href="/donate" className="inline-block px-10 py-4 rounded-full font-semibold text-white text-base transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style={{ background: 'linear-gradient(135deg, #C8960C, #F5A623)' }}>
+                Support the Mission
+              </Link>
+            </SectionWrapper>
+          </section>
+        )}
+      </main>
+      <Footer settings={settings} />
+    </>
+  )
+}
