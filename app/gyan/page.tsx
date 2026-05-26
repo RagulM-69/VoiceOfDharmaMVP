@@ -22,16 +22,28 @@ export default async function GyanPage() {
 
   const heroTitle         = page?.heroTitle         ?? 'Gyaan'
   const heroSub           = page?.heroSubtitle      ?? 'The Path of Knowledge'
-  const mainIntro         = page?.mainIntro         ?? ''
-  const gitaTeachingIntro = page?.gitaTeachingIntro ?? ''
-  const gitaQuote         = page?.gitaQuote?.translation ?? ''
-  const gitaRef           = page?.gitaQuote?.reference   ?? ''
-  const modernH           = page?.modernHeading     ?? ''
-  const modernB           = page?.modernBody        ?? ''
-  const visionH           = page?.visionHeading     ?? ''
-  const visionB           = page?.visionBody        ?? ''
-  const serviceH          = page?.serviceHeading    ?? ''
-  const serviceB          = page?.serviceBody       ?? ''
+  const mainIntro         = page?.mainIntro         ?? `Gyaan, or wisdom, is one of the foundational pillars of dharmic understanding. In the Bhagavad Gita, it is described as the highest purifier — the light that dispels the darkness of ignorance and confusion.
+
+Unlike ordinary knowledge, which accumulates facts and information, Gyaan refers to a deeper understanding: the clarity that arises when one sees reality as it truly is, without the distortions of ego, desire, or fear.
+
+At Voice of Dharma Foundation, the pursuit of Gyaan is understood not as an intellectual exercise, but as a lived process of inquiry, reflection, and transformation.`
+  const gitaTeachingIntro = page?.gitaTeachingIntro ?? 'The Bhagavad Gita’s teaching on knowledge points to its transformative power:'
+  const gitaQuote         = page?.gitaQuote?.translation ?? 'There is nothing in this world as purifying as knowledge. One who becomes perfected in the practice of devotion will in time discover this within himself.'
+  const gitaRef           = page?.gitaQuote?.reference   ?? 'Bhagavad Gita 4.38'
+  const modernH           = page?.modernHeading     ?? 'Gyaan in Contemporary Life'
+  const modernB           = page?.modernBody        ?? `In an age of information overload, true wisdom is rare. We are surrounded by data, opinions, and noise — yet clarity about what truly matters remains elusive.
+
+Gyaan offers a different approach: not the acquisition of more information, but the development of discernment. The ability to distinguish between what is real and what is merely appearance; between what is permanent and what is transient.
+
+This kind of wisdom does not come from books alone. It arises through sustained reflection, honest self-examination, and a willingness to question one’s assumptions and habits of mind.`
+  const visionH           = page?.visionHeading     ?? 'Education as Dharma'
+  const visionB           = page?.visionBody        ?? `Voice of Dharma Foundation believes that access to wisdom teachings is a fundamental need of every human being. Our educational initiatives are rooted in this conviction.
+
+We do not teach Gyaan as a subject to be studied, but as a way of seeing — a shift in perspective that can be cultivated through sustained engagement with dharmic texts, teachings, and practice.`
+  const serviceH          = page?.serviceHeading    ?? 'Educational Initiatives'
+  const serviceB          = page?.serviceBody       ?? `Our Gyaan programs include satsangs, study circles, and access to dharmic literature — offered freely to those who seek them.
+
+We believe that when wisdom is shared generously, it multiplies. This is the essence of Gyaan Yog: knowledge offered as service, in the spirit of dharma.`
   const heroImageUrl = page?.heroImage ? urlForString(page.heroImage, 1920, 75) : '/images/gyaan-manuscripts.png'
 
   return (

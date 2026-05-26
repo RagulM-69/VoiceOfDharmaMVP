@@ -20,23 +20,31 @@ export default async function AboutPage() {
   const [page, settings] = await Promise.all([getAboutPage(), getSiteSettings()])
 
   const heading        = page?.heroHeading    ?? 'About Voice of Dharma'
-  const subheading     = page?.heroSubheading ?? ''
-  const mainBody       = page?.mainBody       ?? ''
-  const quote1         = page?.quote1?.translation ?? ''
-  const quote1ref      = page?.quote1?.reference   ?? ''
-  const focusIntro     = page?.focusIntro     ?? ''
+  const subheading     = page?.heroSubheading ?? 'Rooted in dharma. Committed to service, devotion, and wisdom.'
+  const mainBody       = page?.mainBody       ?? `Voice of Dharma Foundation is a charitable trust dedicated to the promotion of dharmic values, community service, and the living wisdom of the Bhagavad Gita.
+
+Founded by Hari Das, the foundation works at the intersection of spiritual understanding and social responsibility — bringing the principles of Karma, Bhakti, and Gyaan into practical expression through service, education, and cultural preservation.
+
+We believe that the ancient teachings of dharma are not historical artifacts. They are living guides for navigating the complexity of modern life with clarity, compassion, and purpose.`
+  const quote1         = page?.quote1?.translation ?? 'Let noble thoughts come to us from all directions.'
+  const quote1ref      = page?.quote1?.reference   ?? 'Rig Veda'
+  const focusIntro     = page?.focusIntro     ?? 'Our work is organised around three interconnected areas, each rooted in one of the foundational pillars of dharmic life.'
   const serviceTitle   = page?.serviceTitle   ?? 'Service and Community Support'
-  const serviceBody    = page?.serviceBody    ?? ''
+  const serviceBody    = page?.serviceBody    ?? 'Through Karma Yoga, we engage in direct community service — food distribution, support for individuals in need, and programs that bring practical care to those who require it. Every act of service is understood as dharma in action.'
   const devotionTitle  = page?.devotionTitle  ?? 'Preservation of Devotional Culture'
-  const devotionBody   = page?.devotionBody   ?? ''
+  const devotionBody   = page?.devotionBody   ?? `India's devotional traditions — its music, its temple arts, its festivals, its storytelling — carry within them centuries of wisdom. Through Bhakti, we work to preserve and share these traditions, ensuring they remain accessible to future generations.`
   const educationTitle = page?.educationTitle ?? 'Education and Knowledge'
-  const educationBody  = page?.educationBody  ?? ''
+  const educationBody  = page?.educationBody  ?? 'Gyaan, or wisdom, is a core commitment of the foundation. We offer satsangs, study circles, and access to dharmic literature — creating spaces where genuine inquiry and learning can take place.'
   const whyHeading     = page?.whyHeading     ?? 'Why Voice of Dharma'
-  const whyBody        = page?.whyBody        ?? ''
-  const quote2         = page?.quote2?.translation ?? ''
-  const quote2ref      = page?.quote2?.reference   ?? ''
+  const whyBody        = page?.whyBody        ?? `In a world of increasing complexity and fragmentation, there is a growing need for understanding that goes beyond surface-level answers.
+
+Voice of Dharma Foundation was established in the conviction that the wisdom traditions of India — particularly the Bhagavad Gita — offer profound and practical guidance for the challenges of contemporary life.
+
+We do not approach this work as religious instruction. We approach it as an offering — open to all who seek greater clarity, purpose, and understanding.`
+  const quote2         = page?.quote2?.translation ?? 'The soul is never born nor dies at any time. It has not come into being, does not come into being, and will not come into being. It is unborn, eternal, ever-existing, and primeval.'
+  const quote2ref      = page?.quote2?.reference   ?? 'Bhagavad Gita 2.20'
   const connectHeading = page?.connectHeading ?? 'Connect With Voice of Dharma'
-  const connectBody    = page?.connectBody    ?? ''
+  const connectBody    = page?.connectBody    ?? 'Follow us on social media to receive daily reflections, updates on our initiatives, and invitations to upcoming events and gatherings.'
 
   // Social links from Sanity site settings
   const socialLinks = settings?.socialLinks ?? {}

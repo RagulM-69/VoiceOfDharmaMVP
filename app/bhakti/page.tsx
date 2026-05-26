@@ -22,16 +22,28 @@ export default async function BhaktiPage() {
 
   const heroTitle         = page?.heroTitle         ?? 'Bhakti'
   const heroSub           = page?.heroSubtitle      ?? 'The Path of Devotion'
-  const mainIntro         = page?.mainIntro         ?? ''
-  const gitaTeachingIntro = page?.gitaTeachingIntro ?? ''
-  const gitaQuote         = page?.gitaQuote?.translation ?? ''
-  const gitaRef           = page?.gitaQuote?.reference   ?? ''
-  const modernH           = page?.modernHeading     ?? ''
-  const modernB           = page?.modernBody        ?? ''
-  const visionH           = page?.visionHeading     ?? ''
-  const visionB           = page?.visionBody        ?? ''
-  const serviceH          = page?.serviceHeading    ?? ''
-  const serviceB          = page?.serviceBody       ?? ''
+  const mainIntro         = page?.mainIntro         ?? `Bhakti, in its truest sense, is not merely ritual worship or religious observance. It is a fundamental orientation of the heart — a way of approaching life with love, reverence, and the recognition of something greater than oneself.
+
+The word bhakti comes from the Sanskrit root bhaj, meaning to share, to participate in, or to be devoted to. It is an active, living connection — not passive belief, but a dynamic relationship with the sacred dimension of existence.
+
+At Voice of Dharma Foundation, Bhakti is understood as a path that transforms ordinary life into an act of offering — where each moment, each interaction, and each experience becomes an opportunity to deepen one’s connection with the divine.`
+  const gitaTeachingIntro = page?.gitaTeachingIntro ?? 'The Bhagavad Gita speaks directly to the nature of devotion:'
+  const gitaQuote         = page?.gitaQuote?.translation ?? 'Fix your mind on Me, be devoted to Me, worship Me, bow down to Me. So shall you come to Me. I promise you truly, for you are dear to Me.'
+  const gitaRef           = page?.gitaQuote?.reference   ?? 'Bhagavad Gita 18.65'
+  const modernH           = page?.modernHeading     ?? 'Bhakti in Modern Life'
+  const modernB           = page?.modernBody        ?? `In today’s world, bhakti is often misunderstood as emotionalism or superstition. In reality, it represents one of the most profound capacities of the human being: the ability to love unconditionally and to act with complete dedication.
+
+Bhakti does not require renunciation of the world. Rather, it invites full engagement with life — but with a different quality of attention. When actions are performed as an offering, they lose their burden and become a source of joy.
+
+Voice of Dharma Foundation encourages the practice of Bhakti not merely through prayer or ritual, but through the daily cultivation of reverence, gratitude, and love in all areas of life.`
+  const visionH           = page?.visionHeading     ?? 'Preserving Devotional Traditions'
+  const visionB           = page?.visionBody        ?? `India’s devotional traditions — its music, its temple arts, its festivals, its storytelling — carry within them centuries of wisdom about the nature of the human heart. These traditions are not mere cultural heritage; they are living pathways to inner transformation.
+
+Voice of Dharma Foundation is committed to preserving and sharing these traditions, ensuring that future generations have access to the richness of devotional culture.`
+  const serviceH          = page?.serviceHeading    ?? 'Temple and Cultural Initiatives'
+  const serviceB          = page?.serviceBody       ?? `Our Bhakti initiatives support temple preservation, devotional gatherings, and cultural programs that bring communities together around the shared experience of the sacred.
+
+Through music, storytelling, and collective prayer, we create spaces where the spirit of Bhakti can be experienced directly — not merely learned about.`
   const heroImageUrl = page?.heroImage ? urlForString(page.heroImage, 1920, 75) : '/images/devotion-puja.png'
 
   return (

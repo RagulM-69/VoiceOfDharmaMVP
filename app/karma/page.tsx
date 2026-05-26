@@ -24,19 +24,30 @@ export default async function KarmaPage() {
     getSiteSettings(),
   ])
 
-  // Graceful fallbacks — if Sanity has no content yet, defaults kick in
   const heroTitle         = page?.heroTitle         ?? 'Karma'
   const heroSub           = page?.heroSubtitle      ?? 'The Path of Responsible Action'
-  const mainIntro         = page?.mainIntro         ?? ''
-  const gitaTeachingIntro = page?.gitaTeachingIntro ?? ''
-  const gitaQuote         = page?.gitaQuote?.translation ?? ''
-  const gitaRef           = page?.gitaQuote?.reference   ?? ''
-  const modernH           = page?.modernHeading     ?? ''
-  const modernB           = page?.modernBody        ?? ''
-  const visionH           = page?.visionHeading     ?? ''
-  const visionB           = page?.visionBody        ?? ''
-  const serviceH          = page?.serviceHeading    ?? ''
-  const serviceB          = page?.serviceBody       ?? ''
+  const mainIntro         = page?.mainIntro         ?? `Karma, as understood in the Bhagavad Gita, is far more than the popular notion of cause and effect. It refers to the principle of conscious, intentional action — action performed with awareness of its purpose and responsibility.
+
+The word karma comes from the Sanskrit root kri, meaning to do or to act. In its deepest sense, it refers to the quality and intention behind every action we take — not just the action itself.
+
+At Voice of Dharma Foundation, the principle of Karma guides our approach to service. We believe that selfless action — performed without attachment to personal gain — is one of the most direct paths toward both individual growth and social transformation.`
+  const gitaTeachingIntro = page?.gitaTeachingIntro ?? 'One of the most well-known teachings of the Bhagavad Gita addresses the nature of action directly:'
+  const gitaQuote         = page?.gitaQuote?.translation ?? 'You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions. Never consider yourself the cause of the results of your activities, and never be attached to not doing your duty.'
+  const gitaRef           = page?.gitaQuote?.reference   ?? 'Bhagavad Gita 2.47'
+  const modernH           = page?.modernHeading     ?? 'Karma in Daily Life'
+  const modernB           = page?.modernBody        ?? `The teaching of Karma Yoga invites individuals to engage fully with the world — not to withdraw from it. It encourages action that is thoughtful, honest, and motivated by a genuine wish to contribute rather than to accumulate.
+
+In modern life, this principle can be applied in many ways: in the care we bring to our work, in how we treat others, in the responsibility we take for our communities, and in the awareness with which we make daily choices.
+
+When action is guided by clarity rather than ego, it becomes a means of growth rather than a source of entanglement.`
+  const visionH           = page?.visionHeading     ?? 'Our Commitment to Service'
+  const visionB           = page?.visionBody        ?? `Voice of Dharma Foundation expresses Karma through direct community service — from food distribution programs to supporting individuals in moments of difficulty.
+
+Every act of service is understood as an offering — not a transaction. This approach transforms the act of giving from charity into dharma.`
+  const serviceH          = page?.serviceHeading    ?? 'Annadhanam — The Gift of Food'
+  const serviceB          = page?.serviceBody       ?? `Annadhanam, the offering of food, is one of the most ancient expressions of Karma Yoga. At Voice of Dharma Foundation, we organise food distribution programs that serve communities in need — not merely as social work, but as a sacred act of giving.
+
+Every meal offered is understood as prasad — a blessing extended from the heart, without expectation.`
 
   const heroImageUrl = page?.heroImage
     ? urlForString(page.heroImage, 1920, 75)

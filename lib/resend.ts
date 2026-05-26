@@ -117,7 +117,9 @@ export async function sendContactAutoReply(data: {
   }
 }
 
-// Notify voiceofdharmaofficial@gmail.com whenever a contact form is submitted
+// Notify admin whenever a contact form is submitted
+// NOTE: EMAIL_FROM must be a verified domain sender (not onboarding@resend.dev)
+// In Vercel, set EMAIL_FROM=noreply@voiceofdharma.org (or your verified domain)
 export async function sendContactAdminNotification(data: {
   name: string
   email: string
@@ -130,10 +132,13 @@ export async function sendContactAdminNotification(data: {
   }
   const resend = getResend()
   const time = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+  const adminTo = process.env.ADMIN_EMAIL || VOD_GMAIL
+  console.log(`[Resend] Sending contact notification to ${adminTo} from ${EMAIL_FROM}`)
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: `Voice of Dharma Website <${EMAIL_FROM}>`,
-      to: VOD_GMAIL,
+      to: adminTo,
+      replyTo: data.email, // clicking Reply goes directly to the submitter
       subject: `New Contact Message from ${data.name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; background: #f9f9f9; border-radius: 8px;">
@@ -145,13 +150,15 @@ export async function sendContactAdminNotification(data: {
             <tr style="border-bottom: 1px solid #E5E7EB;"><td style="padding: 12px 16px; color: #6B7280; vertical-align: top;">Message</td><td style="padding: 12px 16px; white-space: pre-wrap;">${data.message || '<em style="color:#9CA3AF;">No message provided</em>'}</td></tr>
             <tr><td style="padding: 12px 16px; color: #6B7280;">Time (IST)</td><td style="padding: 12px 16px;">${time}</td></tr>
           </table>
-          <p style="margin-top: 20px; font-size: 13px; color: #9CA3AF;">Sent from voiceofdharma.org contact form</p>
+          <p style="margin-top: 16px; font-size: 13px; color: #6B7280;">💡 Click <strong>Reply</strong> in your email client to respond directly to ${data.name}.</p>
+          <p style="margin-top: 4px; font-size: 12px; color: #9CA3AF;">Sent from voiceofdharma.org contact form</p>
         </div>
       `,
     })
+    console.log('[Resend] Admin contact email result:', JSON.stringify(result))
     return { success: true }
   } catch (error) {
-    console.error('Failed to send admin contact notification:', error)
+    console.error('[Resend] Failed to send admin contact notification:', error)
     return { success: false, error }
   }
 }

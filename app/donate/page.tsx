@@ -22,20 +22,24 @@ export default async function DonatePage() {
   const [page, settings] = await Promise.all([getDonatePage(), getSiteSettings()])
 
   const heroHeading    = page?.heroHeading    ?? 'Support the Mission of Voice of Dharma'
-  const heroSubheading = page?.heroSubheading ?? ''
+  const heroSubheading = page?.heroSubheading ?? 'Your contribution helps spread the timeless wisdom of the Bhagavad Gita through service, devotion, and education.'
   const heroBody       = page?.heroBody       ?? ''
-  const whyHeading     = page?.whyHeading     ?? 'Why Donate'
-  const whyBody        = page?.whyBody        ?? ''
+  const whyHeading     = page?.whyHeading     ?? 'Why Your Support Matters'
+  const whyBody        = page?.whyBody        ?? `Voice of Dharma Foundation runs entirely on the generosity of those who believe in the transformative power of dharmic wisdom.
+
+Every contribution — large or small — directly funds our programs: community food service, temple preservation, educational gatherings, and the broader work of spreading the Bhagavad Gita's teachings.
+
+When you donate, you are not merely giving money. You are participating in a larger act of dharma — contributing to the well-being of others through the spirit of selfless action.`
   const karmaHeading   = page?.karmaHeading   ?? 'Karma Yog'
-  const karmaSub       = page?.karmaSubheading ?? ''
-  const karmaBody      = page?.karmaBody      ?? ''
+  const karmaSub       = page?.karmaSubheading ?? 'Service and Community Support'
+  const karmaBody      = page?.karmaBody      ?? 'Support our Annadhanam (food distribution) programs and community service initiatives. Your contribution funds meals, supplies, and the logistics of reaching those in need.'
   const bhaktiHeading  = page?.bhaktiHeading  ?? 'Bhakti Yog'
-  const bhaktiSub      = page?.bhaktiSubheading ?? ''
-  const bhaktiBody     = page?.bhaktiBody     ?? ''
+  const bhaktiSub      = page?.bhaktiSubheading ?? 'Devotion and Cultural Preservation'
+  const bhaktiBody     = page?.bhaktiBody     ?? `Support our efforts to preserve and share India's devotional traditions — from temple maintenance and festival celebrations to devotional music and cultural programs.`
   const gyanHeading    = page?.gyanHeading    ?? 'Gyaan Yog'
-  const gyanSub        = page?.gyanSubheading ?? ''
-  const gyanBody       = page?.gyanBody       ?? ''
-  const closingText    = page?.closingText    ?? ''
+  const gyanSub        = page?.gyanSubheading ?? 'Education and Wisdom'
+  const gyanBody       = page?.gyanBody       ?? 'Support our educational programs: satsangs, study circles, access to dharmic literature, and resources that make the wisdom of the Bhagavad Gita available to all.'
+  const closingText    = page?.closingText    ?? 'Whatever you do, whatever you eat, whatever you offer or give away, and whatever austerities you perform — do that as an offering to Me. — Bhagavad Gita 9.27'
 
   const yogCards = [
     { heading: karmaHeading, sub: karmaSub, body: karmaBody, btn: 'Support Karma Yog', category: 'karma', img: '/images/annadhanam-service.png', imgAlt: 'Karma Yog — community service' },
