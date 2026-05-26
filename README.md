@@ -21,8 +21,12 @@ The primary goal of the site is to inspire visitors and convert that inspiration
 ## What's Built
 
 ### Public Pages
-- **Home** — Hero slider (Karma / Bhakti / Gyan), About section, Mission, Donate CTA
-- **Philosophy** — Deep dive into Karma Yoga, Bhakti Yoga, and Gyan Yoga with Gita references
+- **Home** — Hero slider (Karma / Bhakti / Gyaan), About section, Mission, Donate CTA
+- **About** — Foundation story, areas of focus, connect section
+- **Karma / Bhakti / Gyaan** — Individual spiritual path pages with Gita teachings
+- **Philosophy** — Deep reflections on dharma, life, and understanding
+- **Activities** — Live feed of foundation activities (Sanity CMS)
+- **Blog** — Articles with individual post pages and Portable Text rendering
 - **Donate** — Full Razorpay payment integration with preset and custom donation amounts
 - **Haridas** — Founder's spiritual journey, vision, and message
 - **Contact** — Contact form with auto-reply email
@@ -32,7 +36,6 @@ The primary goal of the site is to inspire visitors and convert that inspiration
 - Donation analytics — charts, totals, purpose breakdown
 - Full donations table with filters, search, and CSV export
 - Contact submissions management with replied tracking
-- CMS content editor — client can update all website text without touching code
 - Receipt management — view and resend donation receipts
 - Settings — manage admin users
 
@@ -45,6 +48,7 @@ The primary goal of the site is to inspire visitors and convert that inspiration
 | Framework | Next.js 14 (App Router, TypeScript) |
 | Styling | Tailwind CSS |
 | Animations | Framer Motion |
+| CMS | Sanity v3 (content), Supabase (operational data) |
 | Database | Supabase (PostgreSQL) |
 | Auth | Supabase Auth (email/password) |
 | Payments | Razorpay |
@@ -104,13 +108,25 @@ The primary goal of the site is to inspire visitors and convert that inspiration
 Create a `.env.local` file in the root:
 
 ```env
-NEXT_PUBLIC_RAZORPAY_KEY_ID=
-RAZORPAY_KEY_SECRET=
+# Supabase (operational data — auth, donations, contacts)
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+
+# Sanity CMS (public-facing content)
+NEXT_PUBLIC_SANITY_PROJECT_ID=
+NEXT_PUBLIC_SANITY_DATASET=production
+SANITY_API_TOKEN=
+
+# Razorpay
+NEXT_PUBLIC_RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+
+# Email
 RESEND_API_KEY=
 EMAIL_FROM=
+
+# Other
 NEXT_PUBLIC_RECAPTCHA_SITE_KEY=
 RECAPTCHA_SECRET_KEY=
 NEXT_PUBLIC_SITE_URL=
@@ -155,25 +171,25 @@ git push origin main
 
 ---
 
-## Database (Supabase)
+## Content Architecture
 
-The project uses the following tables:
+### Sanity CMS (public-facing content)
+All website content is managed through **Sanity Studio** (`vod-cms` repo):
+- Home page, hero slides, about page, founder page, donate page
+- Spiritual path pages (Karma, Bhakti, Gyaan, Philosophy)
+- Activities feed (live social-style timeline)
+- Blog posts with Portable Text rich content
+- Site settings (social links, contact details, SEO)
 
+### Supabase (operational data only)
 | Table | Purpose |
 |---|---|
-| `site_content` | All editable website text (CMS) |
 | `donations` | All donation records |
 | `contact_submissions` | Contact form submissions |
 | `admin_users` | Authorized admin accounts |
 | `rate_limit_log` | API abuse prevention |
 
 Views: `donation_analytics`, `dashboard_summary`
-
----
-
-## Client Content Management
-
-All website content (text, quotes, contact details, social links) is stored in the `site_content` Supabase table and editable by the client through the admin dashboard at `/admin/content` — no code changes required.
 
 ---
 
