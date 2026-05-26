@@ -24,6 +24,11 @@ export interface GitaQuote {
 }
 
 // ── Site Settings ─────────────────────────────────────────────────────────────
+export interface FooterQuickLink {
+  label: string
+  href: string
+}
+
 export interface SiteSettings {
   _id: string
   siteName: string
@@ -33,6 +38,9 @@ export interface SiteSettings {
   address?: string
   registrationNumber?: string
   pan?: string
+  taxExemptionNote?: string
+  footerBottomText?: string
+  footerQuickLinks?: FooterQuickLink[]
   // Contact page fields
   contactHeroTitle?: string
   contactHeroSubtitle?: string

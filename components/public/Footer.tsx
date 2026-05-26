@@ -3,13 +3,11 @@ import type { SiteSettings } from '@/lib/sanity/types'
 import type { ContentMap } from '@/types'
 
 interface FooterProps {
-  // New: Sanity settings (primary source)
   settings?: SiteSettings | null
-  // Legacy: Supabase ContentMap (kept for backward compat during migration, will be removed after)
-  content?: ContentMap
+  content?: ContentMap // legacy compat — kept during migration
 }
 
-// SVG icon map keyed by social link key
+// ── Social icon SVGs ──────────────────────────────────────────────────────────
 const SOCIAL_ICONS: Record<string, { label: string; svg: React.ReactNode }> = {
   instagram: {
     label: 'Instagram',
@@ -77,14 +75,36 @@ const DEFAULT_ICON = (
 
 const PLATFORM_ORDER = ['instagram', 'youtube', 'facebook', 'whatsapp', 'twitter', 'linkedin', 'telegram']
 
+// Default quick links — used when Sanity footerQuickLinks is empty
+const DEFAULT_QUICK_LINKS = [
+  { href: '/',           label: 'Home' },
+  { href: '/about',      label: 'About' },
+  { href: '/activities', label: 'Activities' },
+  { href: '/blog',       label: 'Blog' },
+  { href: '/philosophy', label: 'Philosophy' },
+  { href: '/haridas',    label: 'Haridas' },
+  { href: '/donate',     label: 'Donate' },
+  { href: '/contact',    label: 'Contact' },
+  { href: '/privacy',    label: 'Privacy Policy' },
+  { href: '/terms',      label: 'Terms of Service' },
+  { href: '/refund',     label: 'Refund Policy' },
+]
+
 export default function Footer({ settings, content }: FooterProps) {
-  // Use Sanity settings as primary; fall back to legacy ContentMap if settings absent
-  const tagline = settings?.tagline ?? content?.footer?.info?.tagline ?? 'Spreading the light of Bhagavad Gita'
-  const email   = settings?.email   ?? content?.footer?.info?.email   ?? ''
-  const phone   = settings?.phone   ?? content?.footer?.info?.phone   ?? ''
-  const address = settings?.address ?? content?.footer?.info?.address ?? ''
-  const regNo   = settings?.registrationNumber ?? content?.footer?.info?.registration_number ?? ''
-  const pan     = settings?.pan     ?? content?.footer?.info?.pan     ?? ''
+  // ── Pull all values from Sanity (fall back to legacy ContentMap then hardcoded defaults)
+  const tagline        = settings?.tagline             ?? content?.footer?.info?.tagline  ?? 'Spreading the light of Bhagavad Gita'
+  const email          = settings?.email               ?? content?.footer?.info?.email    ?? ''
+  const phone          = settings?.phone               ?? content?.footer?.info?.phone    ?? ''
+  const address        = settings?.address             ?? content?.footer?.info?.address  ?? ''
+  const regNo          = settings?.registrationNumber  ?? content?.footer?.info?.registration_number ?? ''
+  const pan            = settings?.pan                 ?? content?.footer?.info?.pan      ?? ''
+  const taxNote        = settings?.taxExemptionNote    ?? 'Donations may be eligible for 80G tax exemption'
+  const bottomText     = settings?.footerBottomText    ?? 'Built with devotion · Secure payments via Razorpay'
+
+  // Quick links — use Sanity array if populated, else fall back to hardcoded list
+  const quickLinks = (settings?.footerQuickLinks && settings.footerQuickLinks.length > 0)
+    ? settings.footerQuickLinks
+    : DEFAULT_QUICK_LINKS
 
   // Social links — from Sanity settings or legacy ContentMap
   const rawSocial: Record<string, string> = settings?.socialLinks
@@ -102,14 +122,15 @@ export default function Footer({ settings, content }: FooterProps) {
     <footer style={{ background: '#0A1F44' }} className="text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {/* Brand */}
+
+          {/* ── Brand + Social ── */}
           <div>
             <h3 className="font-garamond text-2xl font-semibold text-amber-400 mb-3">
               Voice of Dharma
             </h3>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">{tagline}</p>
 
-            {/* Social links */}
+            {/* Social icons */}
             <div className="flex flex-wrap gap-3">
               {socialLinks.map(({ key, url }) => {
                 const meta = SOCIAL_ICONS[key]
@@ -130,23 +151,11 @@ export default function Footer({ settings, content }: FooterProps) {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* ── Quick Links ── */}
           <div>
             <h4 className="font-garamond text-lg font-semibold text-amber-400 mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              {[
-                { href: '/', label: 'Home' },
-                { href: '/about', label: 'About' },
-                { href: '/activities', label: 'Activities' },
-                { href: '/blog', label: 'Blog' },
-                { href: '/philosophy', label: 'Philosophy' },
-                { href: '/haridas', label: 'Haridas' },
-                { href: '/donate', label: 'Donate' },
-                { href: '/contact', label: 'Contact' },
-                { href: '/privacy', label: 'Privacy Policy' },
-                { href: '/terms', label: 'Terms of Service' },
-                { href: '/refund', label: 'Refund Policy' },
-              ].map((link) => (
+              {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-gray-300 text-sm hover:text-amber-400 transition-colors">
                     {link.label}
@@ -156,27 +165,30 @@ export default function Footer({ settings, content }: FooterProps) {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* ── Contact Info ── */}
           <div>
             <h4 className="font-garamond text-lg font-semibold text-amber-400 mb-4">Contact</h4>
             <div className="space-y-2 text-sm text-gray-300">
-              {email && <p><a href={`mailto:${email}`} className="hover:text-amber-400">{email}</a></p>}
-              {phone && <p><a href={`tel:${phone}`} className="hover:text-amber-400">{phone}</a></p>}
+              {email   && <p><a href={`mailto:${email}`} className="hover:text-amber-400 transition-colors">{email}</a></p>}
+              {phone   && <p><a href={`tel:${phone}`}    className="hover:text-amber-400 transition-colors">{phone}</a></p>}
               {address && <p className="leading-relaxed">{address}</p>}
             </div>
+
+            {/* Reg / PAN / 80G */}
             {(regNo || pan) && (
               <div className="mt-6 pt-4 border-t border-gray-700 space-y-1 text-xs text-gray-400">
                 {regNo && <p>Reg. No: {regNo}</p>}
-                {pan && <p>PAN: {pan}</p>}
-                <p className="mt-2 text-gray-500">Donations may be eligible for 80G tax exemption</p>
+                {pan   && <p>PAN: {pan}</p>}
+                {taxNote && <p className="mt-2 text-gray-500">{taxNote}</p>}
               </div>
             )}
           </div>
         </div>
 
+        {/* ── Bottom bar ── */}
         <div className="mt-12 pt-6 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
           <p>© {new Date().getFullYear()} Voice of Dharma Foundation. All rights reserved.</p>
-          <p>Content powered by Sanity CMS · Payments by Razorpay</p>
+          <p>{bottomText}</p>
         </div>
       </div>
     </footer>

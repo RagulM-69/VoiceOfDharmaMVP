@@ -58,11 +58,17 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
       address,
       registrationNumber,
       pan,
+      taxExemptionNote,
+      footerBottomText,
+      footerQuickLinks[] { label, href },
+      contactHeroTitle,
+      contactHeroSubtitle,
+      contactSidebarQuote { text, reference },
       socialLinks,
       ${SEO_FIELDS}
     }`,
     {},
-    { next: { revalidate: 3600 } }
+    { next: { revalidate: 60 } }
   )
 }
 
