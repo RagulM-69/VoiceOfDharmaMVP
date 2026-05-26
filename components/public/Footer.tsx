@@ -1,12 +1,13 @@
 import Link from 'next/link'
+import type { SiteSettings } from '@/lib/sanity/types'
 import type { ContentMap } from '@/types'
-import { getContent } from '@/lib/content'
 
 interface FooterProps {
-  content: ContentMap
+  settings?: SiteSettings | null
+  content?: ContentMap // legacy compat — kept during migration
 }
 
-// SVG icon map keyed by social link key in DB
+// ── Social icon SVGs ──────────────────────────────────────────────────────────
 const SOCIAL_ICONS: Record<string, { label: string; svg: React.ReactNode }> = {
   instagram: {
     label: 'Instagram',
@@ -66,43 +67,67 @@ const SOCIAL_ICONS: Record<string, { label: string; svg: React.ReactNode }> = {
   },
 }
 
-// Fallback icon for unknown platforms
 const DEFAULT_ICON = (
   <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17">
     <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.293 7.294-1.414-1.414L17.585 5H13V3h8z"/>
   </svg>
 )
 
-// Ordered display priority
 const PLATFORM_ORDER = ['instagram', 'youtube', 'facebook', 'whatsapp', 'twitter', 'linkedin', 'telegram']
 
-export default function Footer({ content }: FooterProps) {
-  const tagline = getContent(content, 'footer', 'info', 'tagline', 'Spreading the light of Bhagavad Gita')
-  const email = getContent(content, 'footer', 'info', 'email', 'contact@voiceofdharma.org')
-  const phone = getContent(content, 'footer', 'info', 'phone', '')
-  const address = getContent(content, 'footer', 'info', 'address', '')
-  const regNo = getContent(content, 'footer', 'info', 'registration_number', '')
-  const pan = getContent(content, 'footer', 'info', 'pan', '')
+// Default quick links — used when Sanity footerQuickLinks is empty
+const DEFAULT_QUICK_LINKS = [
+  { href: '/',           label: 'Home' },
+  { href: '/about',      label: 'About' },
+  { href: '/activities', label: 'Activities' },
+  { href: '/blog',       label: 'Blog' },
+  { href: '/philosophy', label: 'Philosophy' },
+  { href: '/haridas',    label: 'Haridas' },
+  { href: '/donate',     label: 'Donate' },
+  { href: '/contact',    label: 'Contact' },
+]
 
-  // Dynamically gather ALL social links from the DB content map
-  const rawSocialLinks = content?.social?.links || {}
+export default function Footer({ settings, content }: FooterProps) {
+  // ── Pull all values from Sanity (fall back to legacy ContentMap then hardcoded defaults)
+  const tagline        = settings?.tagline             ?? content?.footer?.info?.tagline  ?? 'Spreading the light of Bhagavad Gita'
+  const email          = settings?.email               ?? content?.footer?.info?.email    ?? ''
+  const phone          = settings?.phone               ?? content?.footer?.info?.phone    ?? ''
+  const address        = settings?.address             ?? content?.footer?.info?.address  ?? ''
+  const regNo          = settings?.registrationNumber  ?? content?.footer?.info?.registration_number ?? ''
+  const pan            = settings?.pan                 ?? content?.footer?.info?.pan      ?? ''
+  const taxNote        = settings?.taxExemptionNote    ?? 'Donations may be eligible for 80G tax exemption'
+  const bottomText     = settings?.footerBottomText    ?? 'Built with devotion · Secure payments via Razorpay'
+
+  // Quick links — use Sanity array if populated, else fall back to hardcoded list
+  const quickLinks = (settings?.footerQuickLinks && settings.footerQuickLinks.length > 0)
+    ? settings.footerQuickLinks
+    : DEFAULT_QUICK_LINKS
+
+  // Social links — from Sanity settings or legacy ContentMap
+  const rawSocial: Record<string, string> = settings?.socialLinks
+    ? Object.fromEntries(
+        Object.entries(settings.socialLinks).filter(([, v]) => Boolean(v)) as [string, string][]
+      )
+    : (content?.social?.links ?? {})
+
   const socialLinks = [
-    ...PLATFORM_ORDER.filter(k => rawSocialLinks[k]).map(k => ({ key: k, url: rawSocialLinks[k] })),
-    ...Object.entries(rawSocialLinks).filter(([k]) => !PLATFORM_ORDER.includes(k)).map(([k, url]) => ({ key: k, url })),
+    ...PLATFORM_ORDER.filter((k) => rawSocial[k]).map((k) => ({ key: k, url: rawSocial[k] })),
+    ...Object.entries(rawSocial).filter(([k]) => !PLATFORM_ORDER.includes(k)).map(([k, url]) => ({ key: k, url })),
   ]
 
   return (
     <footer style={{ background: '#0A1F44' }} className="text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {/* Brand */}
+
+          {/* ── Brand + Social ── */}
           <div>
             <h3 className="font-garamond text-2xl font-semibold text-amber-400 mb-3">
               Voice of Dharma
             </h3>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">{tagline}</p>
 
-            {/* Social links — auto-rendered from DB with real SVG logos */}
+            {/* Social icons */}
             <div className="flex flex-wrap gap-3">
               {socialLinks.map(({ key, url }) => {
                 const meta = SOCIAL_ICONS[key]
@@ -123,25 +148,13 @@ export default function Footer({ content }: FooterProps) {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* ── Quick Links ── */}
           <div>
             <h4 className="font-garamond text-lg font-semibold text-amber-400 mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              {[
-                { href: '/', label: 'Home' },
-                { href: '/philosophy', label: 'Philosophy' },
-                { href: '/haridas', label: 'Haridas' },
-                { href: '/donate', label: 'Donate' },
-                { href: '/contact', label: 'Contact' },
-                { href: '/privacy', label: 'Privacy Policy' },
-                { href: '/terms', label: 'Terms of Service' },
-                { href: '/refund', label: 'Refund Policy' },
-              ].map((link) => (
+              {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-gray-300 text-sm hover:text-amber-400 transition-colors"
-                  >
+                  <Link href={link.href} className="text-gray-300 text-sm hover:text-amber-400 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -149,27 +162,42 @@ export default function Footer({ content }: FooterProps) {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* ── Contact Info ── */}
           <div>
             <h4 className="font-garamond text-lg font-semibold text-amber-400 mb-4">Contact</h4>
             <div className="space-y-2 text-sm text-gray-300">
-              {email && <p><a href={`mailto:${email}`} className="hover:text-amber-400">{email}</a></p>}
-              {phone && <p><a href={`tel:${phone}`} className="hover:text-amber-400">{phone}</a></p>}
+              {email   && <p><a href={`mailto:${email}`} className="hover:text-amber-400 transition-colors">{email}</a></p>}
+              {phone   && <p><a href={`tel:${phone}`}    className="hover:text-amber-400 transition-colors">{phone}</a></p>}
               {address && <p className="leading-relaxed">{address}</p>}
             </div>
+
+            {/* Reg / PAN / 80G */}
             {(regNo || pan) && (
               <div className="mt-6 pt-4 border-t border-gray-700 space-y-1 text-xs text-gray-400">
                 {regNo && <p>Reg. No: {regNo}</p>}
-                {pan && <p>PAN: {pan}</p>}
-                <p className="mt-2 text-gray-500">Donations may be eligible for 80G tax exemption</p>
+                {pan   && <p>PAN: {pan}</p>}
+                {taxNote && <p className="mt-2 text-gray-500">{taxNote}</p>}
               </div>
             )}
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+        {/* ── Bottom bar ── */}
+        <div className="mt-12 pt-6 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+          {/* Left: copyright */}
           <p>© {new Date().getFullYear()} Voice of Dharma Foundation. All rights reserved.</p>
-          <p>Built with devotion · Secure payments coming soon</p>
+
+          {/* Centre: legal links */}
+          <div className="flex items-center gap-4">
+            <Link href="/privacy" className="hover:text-amber-400 transition-colors">Privacy Policy</Link>
+            <span className="text-gray-700">·</span>
+            <Link href="/terms" className="hover:text-amber-400 transition-colors">Terms of Service</Link>
+            <span className="text-gray-700">·</span>
+            <Link href="/refund" className="hover:text-amber-400 transition-colors">Refund Policy</Link>
+          </div>
+
+          {/* Right: built-with text */}
+          <p>{bottomText}</p>
         </div>
       </div>
     </footer>

@@ -470,8 +470,24 @@ export default function ContentEditorPage() {
         </div>
       )}
 
+      {/* ── Deprecation Banner ─────────────────────────────────────────────── */}
+      <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 flex items-start gap-4">
+        <div className="text-2xl flex-shrink-0">⚠️</div>
+        <div className="flex-1">
+          <p className="font-semibold text-amber-800 text-sm">This editor has been superseded by Sanity CMS</p>
+          <p className="text-amber-700 text-xs mt-1 leading-relaxed">
+            All website content is now managed through{' '}
+            <a href="https://voice-of-dharma.sanity.studio" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-amber-900">
+              voice-of-dharma.sanity.studio
+            </a>
+            . This editor is preserved as a read-only fallback during the migration period and will be removed after validation.
+            Please do not make new edits here — use Sanity Studio instead.
+          </p>
+        </div>
+      </div>
+
       <div className="mb-6">
-        <h1 className="font-garamond text-3xl font-semibold text-gray-800">Content Editor</h1>
+        <h1 className="font-garamond text-3xl font-semibold text-gray-800">Content Editor <span className="text-base font-sans text-gray-400 font-normal ml-2">(Legacy — Deprecated)</span></h1>
         <p className="text-gray-500 text-sm mt-1">Edit all website content without touching code. Changes apply instantly.</p>
       </div>
 
