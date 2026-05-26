@@ -105,16 +105,20 @@ export interface SpiritualPage {
   heroImage?: SanityImage
   mainIntro?: string
   gitaTeachingIntro?: string
-  gitaQuote?: GitaQuote
+  gitaQuote?: GitaQuote    // quote after section 1
   modernHeading?: string
   modernBody?: string
+  quote2?: GitaQuote       // quote after section 2 (Katha Upanishad)
   visionHeading?: string
   visionBody?: string
+  quote3?: GitaQuote       // quote after section 3 (BG 2.47)
   // Philosophy-only extended sections
   devotionHeading?: string
   devotionBody?: string
+  quote4?: GitaQuote       // quote after section 4 (Bhagavata Purana)
   knowledgeHeading?: string
   knowledgeBody?: string
+  quote5?: GitaQuote       // quote after section 5 (BG 4.38)
   integrationHeading?: string
   integrationBody?: string
   livingProcessHeading?: string

@@ -134,16 +134,19 @@ export async function getSpiritualPage(slug: string): Promise<SpiritualPage | nu
       heroSubtitle,
       heroImage { ${IMAGE_FIELDS} },
       mainIntro,
-      gitaTeachingIntro,
       gitaQuote { sanskrit, translation, reference },
       modernHeading,
       modernBody,
+      quote2 { sanskrit, translation, reference },
       visionHeading,
       visionBody,
+      quote3 { sanskrit, translation, reference },
       devotionHeading,
       devotionBody,
+      quote4 { sanskrit, translation, reference },
       knowledgeHeading,
       knowledgeBody,
+      quote5 { sanskrit, translation, reference },
       integrationHeading,
       integrationBody,
       livingProcessHeading,
@@ -156,7 +159,7 @@ export async function getSpiritualPage(slug: string): Promise<SpiritualPage | nu
       ${SEO_FIELDS}
     }`,
     { slug },
-    { next: { revalidate: 3600 } }
+    { next: { revalidate: 60 } }
   )
 }
 
