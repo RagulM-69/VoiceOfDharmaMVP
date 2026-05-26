@@ -43,20 +43,21 @@ function ActivityCard({ activity }: { activity: Activity }) {
   const pillar = PILLAR_STYLE[activity.pillar] ?? PILLAR_STYLE.general
   const mainImage = activity.coverImage ?? activity.images?.[0]
   const extraImages = activity.images?.slice(1, 4) ?? []
+  const hasSlug = Boolean(activity.slug?.current)
 
-  return (
+  const cardContent = (
     <article
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-300"
+      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 h-full flex flex-col"
       aria-label={activity.title}
     >
       {/* Primary image */}
       {mainImage && (
-        <div className="relative w-full h-56 md:h-64 overflow-hidden">
+        <div className="relative w-full h-56 md:h-64 overflow-hidden flex-shrink-0">
           <Image
             src={urlFor(mainImage).width(800).height(450).format('webp').url()}
             alt={mainImage.alt ?? activity.title}
             fill
-            className="object-cover transition-transform duration-500 hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, 600px"
           />
           {activity.isFeatured && (
@@ -73,7 +74,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
 
       {/* Extra images strip */}
       {extraImages.length > 0 && (
-        <div className="grid grid-cols-3 gap-1 px-1 -mt-1">
+        <div className="grid grid-cols-3 gap-1 px-1 -mt-1 flex-shrink-0">
           {extraImages.map((img, i) => (
             <div key={i} className="relative h-20 overflow-hidden rounded">
               <Image
@@ -82,7 +83,6 @@ function ActivityCard({ activity }: { activity: Activity }) {
                 fill className="object-cover"
                 sizes="200px"
               />
-              {/* Overlay for last image if more exist */}
               {i === 2 && (activity.images?.length ?? 0) > 4 && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                   <span className="text-white text-sm font-semibold">+{(activity.images?.length ?? 0) - 4}</span>
@@ -94,7 +94,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
       )}
 
       {/* Content */}
-      <div className="p-5">
+      <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-3 mb-3">
           <h2 className="font-garamond text-xl font-semibold text-gray-800 leading-snug flex-1">
             {activity.title}
@@ -102,27 +102,31 @@ function ActivityCard({ activity }: { activity: Activity }) {
         </div>
 
         {activity.summary && (
-          <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">{activity.summary}</p>
+          <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-1">{activity.summary}</p>
         )}
 
-        <div className="flex items-center justify-between text-xs text-gray-400 mt-2 pt-3 border-t border-gray-100">
+        <div className="flex items-center justify-between text-xs text-gray-400 mt-auto pt-3 border-t border-gray-100">
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
             <time dateTime={activity.publishedAt}>{timeAgo(activity.publishedAt)}</time>
           </div>
-          {activity.location && (
-            <span className="flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              {activity.location}
-            </span>
-          )}
+          <span className="text-amber-600 font-semibold text-xs">
+            {hasSlug ? 'Read more →' : (activity.location ?? '')}
+          </span>
         </div>
       </div>
     </article>
   )
+
+  // Wrap in Link only if the activity has a slug
+  if (hasSlug) {
+    return (
+      <Link href={`/activities/${activity.slug.current}`} className="group block h-full">
+        {cardContent}
+      </Link>
+    )
+  }
+  return cardContent
 }
 
 // ── Empty state ───────────────────────────────────────────────────────────────

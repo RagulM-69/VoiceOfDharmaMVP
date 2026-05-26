@@ -6,7 +6,7 @@ import SectionWrapper from '@/components/public/SectionWrapper'
 import Link from 'next/link'
 import NextImage from 'next/image'
 
-export const revalidate = 3600
+export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getAboutPage()

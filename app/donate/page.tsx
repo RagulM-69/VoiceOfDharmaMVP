@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import Image from 'next/image'
 
-export const revalidate = 3600
+export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getDonatePage()

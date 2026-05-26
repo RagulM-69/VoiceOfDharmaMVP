@@ -6,7 +6,7 @@ import ContactForm from '@/components/public/ContactForm'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
 
-export const revalidate = 3600
+export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
