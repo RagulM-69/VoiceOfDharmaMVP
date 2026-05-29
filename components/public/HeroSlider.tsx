@@ -51,14 +51,17 @@ export default function HeroSlider({ slides, gitaQuote, gitaQuoteRef }: HeroSlid
   const desktopFocusMap: Record<string, string> = {
     karma: 'center 45%', // shifted up to show full heads
     bhakti: 'center 40%', // shifted up for woman's head
-    gyan: 'center 80%',  // shifted up to include monk's head securely
+    gyan: 'center 82%',  // shifted up to include monk's head securely
+    gyaan: 'center 82%', // handle double-a variant from Sanity
   }
 
   // Shared background image renderer
   const BgImage = ({ keyPrefix, isDesktop = false }: { keyPrefix: string; isDesktop?: boolean }) => {
     const slideTitle = slides[current]?.title?.toLowerCase() || ''
-    // Mobile is perfectly framed at 'center 60%', desktop uses custom crop points
-    const bgPosition = isDesktop ? (desktopFocusMap[slideTitle] || 'center') : 'center 60%'
+    // Frame perfectly using our custom crop points, with viewport-specific fallbacks
+    const bgPosition = desktopFocusMap[slideTitle] 
+      ? desktopFocusMap[slideTitle] 
+      : (isDesktop ? 'center' : 'center 60%')
 
     return (
       <AnimatePresence>
