@@ -9,9 +9,14 @@ function getResend(): Resend {
   return resendClient
 }
 
-const EMAIL_FROM = process.env.EMAIL_FROM || 'donations@voiceofdharma.org'
+// Verified outbound sender for donation receipts
+const EMAIL_FROM = process.env.EMAIL_FROM || 'donations@voiceofdharmafoundation.org'
+
+// Verified outbound sender for contact form submissions
+const CONTACT_FROM = 'contactsubmissions@voiceofdharmafoundation.org'
+
+// Admin recipient — driven by ADMIN_EMAIL env key (set in deployment dashboard)
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'voiceofdharmaofficial@gmail.com'
-const VOD_GMAIL = 'voiceofdharmaofficial@gmail.com'
 
 export async function sendDonationReceipt(data: {
   name: string
@@ -89,7 +94,7 @@ export async function sendContactAutoReply(data: {
   const resend = getResend()
   try {
     await resend.emails.send({
-      from: `Voice of Dharma Foundation <${EMAIL_FROM}>`,
+      from: `Voice of Dharma Foundation <${CONTACT_FROM}>`,
       to: data.email,
       subject: 'We received your message — Voice of Dharma Foundation',
       html: `
@@ -132,11 +137,11 @@ export async function sendContactAdminNotification(data: {
   }
   const resend = getResend()
   const time = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
-  const adminTo = process.env.ADMIN_EMAIL || VOD_GMAIL
-  console.log(`[Resend] Sending contact notification to ${adminTo} from ${EMAIL_FROM}`)
+  const adminTo = process.env.ADMIN_EMAIL || 'voiceofdharmaofficial@gmail.com'
+  console.log(`[Resend] Sending contact notification to ${adminTo} from ${CONTACT_FROM}`)
   try {
     const result = await resend.emails.send({
-      from: `Voice of Dharma Website <${EMAIL_FROM}>`,
+      from: `Voice of Dharma Website <${CONTACT_FROM}>`,
       to: adminTo,
       replyTo: data.email, // clicking Reply goes directly to the submitter
       subject: `New Contact Message from ${data.name}`,
