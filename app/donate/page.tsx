@@ -5,6 +5,7 @@ import Footer from '@/components/public/Footer'
 import DonationForm from '@/components/public/DonationForm'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Link from 'next/link'
+import YogCategoryButton from '@/components/public/YogCategoryButton'
 import { Suspense } from 'react'
 import Image from 'next/image'
 
@@ -111,9 +112,7 @@ When you donate, you are not merely giving money. You are participating in a lar
                             <p key={j} className="text-gray-300 text-sm leading-relaxed mb-3 last:mb-0">{para}</p>
                           ))}
                         </div>
-                        <Link href={`/donate?cause=${card.category}`} className="mt-6 block text-center px-6 py-3 rounded-full font-semibold text-white text-sm transition-all hover:-translate-y-0.5 hover:shadow-lg" style={{ background: 'linear-gradient(135deg, #C8960C, #F5A623)' }}>
-                          {card.btn}
-                        </Link>
+                        <YogCategoryButton category={card.category} label={card.btn} />
                       </div>
                     </div>
                   </SectionWrapper>
