@@ -45,7 +45,7 @@ interface EmailBroadcastDoc {
   _id: string
   campaignName: string
   emailSubject: string
-  senderPrefix: 'promotions' | 'news' | 'contact'
+  senderPrefix: 'promotions' | 'news' | 'contact' | 'support'
   campaignType: string
   mainBannerImage?: { asset: { _ref: string }; alt?: string }
   emailContent?: PortableTextBlock[]

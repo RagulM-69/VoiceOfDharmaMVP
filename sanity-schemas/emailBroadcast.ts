@@ -41,6 +41,7 @@ export default defineType({
           { title: 'promotions@voiceofdharmafoundation.org', value: 'promotions' },
           { title: 'news@voiceofdharmafoundation.org',       value: 'news'       },
           { title: 'contact@voiceofdharmafoundation.org',    value: 'contact'    },
+          { title: 'support@voiceofdharmafoundation.org',    value: 'support'    },
         ],
         layout: 'radio',
       },
