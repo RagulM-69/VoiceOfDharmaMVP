@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import FooterNewsletter from './FooterNewsletter'
 import type { SiteSettings } from '@/lib/sanity/types'
 import type { ContentMap } from '@/types'
 
@@ -118,7 +119,7 @@ export default function Footer({ settings, content }: FooterProps) {
   return (
     <footer style={{ background: '#0A1F44' }} className="text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
 
           {/* ── Brand + Social ── */}
           <div>
@@ -180,7 +181,13 @@ export default function Footer({ settings, content }: FooterProps) {
               </div>
             )}
           </div>
-        </div>
+
+          {/* ── Newsletter ── */}
+          <div>
+            <FooterNewsletter />
+          </div>
+
+        </div>{/* /grid */}
 
         {/* ── Bottom bar ── */}
         <div className="mt-12 pt-6 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-500">

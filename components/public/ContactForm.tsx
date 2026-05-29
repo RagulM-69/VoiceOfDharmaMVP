@@ -35,6 +35,7 @@ export default function ContactForm() {
   const [success, setSuccess] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [recaptchaReady, setRecaptchaReady] = useState(false)
+  const [newsletterConsent, setNewsletterConsent] = useState(false)
 
   // Load reCAPTCHA script once
   useEffect(() => {
@@ -99,6 +100,15 @@ export default function ContactForm() {
 
       setSuccess(true)
       setFormData({ name: '', email: '', phone: '', message: '' })
+
+      // Register subscriber if consent given (non-blocking)
+      if (newsletterConsent) {
+        fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: formData.name, email: formData.email }),
+        }).catch(console.error)
+      }
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
@@ -144,6 +154,25 @@ export default function ContactForm() {
         <label className="block text-sm font-medium text-gray-700 mb-1">Message (optional)</label>
         <textarea value={formData.message} onChange={(e) => updateField('message', e.target.value)} placeholder="Your message..." rows={4} className="form-input resize-none" maxLength={2000} />
       </div>
+
+      {/* Newsletter consent */}
+      <label className="flex items-start gap-3 cursor-pointer group">
+        <span className="relative mt-0.5 flex-shrink-0">
+          <input
+            type="checkbox"
+            checked={newsletterConsent}
+            onChange={(e) => setNewsletterConsent(e.target.checked)}
+            className="sr-only peer"
+          />
+          <span className="block w-5 h-5 rounded border-2 border-gray-300 peer-checked:border-amber-500 peer-checked:bg-amber-500 transition-all duration-200 group-hover:border-amber-400" />
+          <span className="absolute inset-0 flex items-center justify-center text-white text-xs pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
+            ✓
+          </span>
+        </span>
+        <span className="text-sm text-gray-600 leading-snug">
+          Subscribe me to the <strong className="text-gray-800">Voice of Dharma newsletter</strong> for spiritual updates, events, and mission news.
+        </span>
+      </label>
 
       <AnimatePresence>
         {errorMsg && (
