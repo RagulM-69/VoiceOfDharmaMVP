@@ -6,28 +6,33 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
-  { href: '/',            label: 'Home' },
-  { href: '/about',       label: 'About' },
-  { href: '/activities',  label: 'Activities' },
-  { href: '/blog',        label: 'Blog' },
-  { href: '/philosophy',  label: 'Philosophy' },
-  { href: '/haridas',     label: 'Haridas' },
-  { href: '/contact',     label: 'Contact' },
+  { href: '/',                    label: 'Home' },
+  { href: '/about',               label: 'About' },
+  { href: '/activities',          label: 'Activities' },
+  { href: '/blog',                label: 'Blog' },
+  { href: '/philosophy',          label: 'Philosophy' },
+  { href: '/haridas',             label: 'Haridas' },
+  { href: '/letter-to-krishna',   label: 'Letter to Krishna' },
+  { href: '/contact',             label: 'Contact' },
 ]
 
 interface NavbarProps {
   /** 'dark' = deep blue bg with white text (home hero).
    *  'light' = cream bg with dark text (all other pages). Default: 'light' */
   variant?: 'light' | 'dark'
+  /** When true, navbar stays dark regardless of scroll position.
+   *  Use on pages with a dark background that must never flip to cream. */
+  keepDark?: boolean
 }
 
-export default function Navbar({ variant = 'light' }: NavbarProps) {
+export default function Navbar({ variant = 'light', keepDark = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
 
   const [pastHero, setPastHero] = useState(false)
-  const isDark = variant === 'dark' && !pastHero
+  // keepDark overrides the scroll-based pastHero flip — used on sanctuary pages
+  const isDark = keepDark || (variant === 'dark' && !pastHero)
 
   // Check if link is active — exact match for '/', prefix match for others
   const isActive = (href: string) => {
