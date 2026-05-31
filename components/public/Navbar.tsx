@@ -63,9 +63,13 @@ export default function Navbar({ variant = 'light', keepDark = false }: NavbarPr
       <header
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={isDark ? {
-          // ── Dark variant (home page) ──────────────────────────────
-          background: scrolled ? 'rgba(10,31,68,0.98)' : '#0A1F44',
-          borderBottom: '1px solid rgba(200,150,12,0.3)',
+          // ── Dark variant ──────────────────────────────
+          background: keepDark
+            ? (scrolled ? 'rgba(2, 5, 9, 0.98)' : '#020509')
+            : (scrolled ? 'rgba(10,31,68,0.98)' : '#0A1F44'),
+          borderBottom: keepDark
+            ? '1px solid rgba(251, 191, 36, 0.15)'
+            : '1px solid rgba(200,150,12,0.3)',
           boxShadow: scrolled ? '0 2px 12px rgba(0,0,0,0.3)' : 'none',
           paddingTop: scrolled ? '0.6rem' : '0.9rem',
           paddingBottom: scrolled ? '0.6rem' : '0.9rem',

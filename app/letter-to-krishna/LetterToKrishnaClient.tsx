@@ -651,10 +651,17 @@ export default function LetterToKrishnaClient() {
         </div>
       )}
 
-      {/* ════════════════════════════════════════════════════════════
-          NAVBAR
-      ════════════════════════════════════════════════════════════ */}
-      <Navbar variant="dark" keepDark />
+      <div
+        style={{
+          opacity: contentReady && offerStage === 'idle' ? 1 : 0,
+          transition: offerStage !== 'idle'
+            ? 'opacity 3.5s cubic-bezier(0.4, 0, 1, 1)'
+            : 'opacity 1.5s ease',
+          pointerEvents: contentReady && offerStage === 'idle' ? 'auto' : 'none',
+        }}
+      >
+        <Navbar variant="dark" keepDark />
+      </div>
 
       {/* ════════════════════════════════════════════════════════════
           AUDIO TOGGLE
