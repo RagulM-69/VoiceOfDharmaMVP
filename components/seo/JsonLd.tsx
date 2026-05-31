@@ -32,10 +32,11 @@ export function OrganizationSchema({ settings }: { settings: SiteSettings | null
     url: SITE_URL,
     logo: {
       '@type': 'ImageObject',
-      url: `${SITE_URL}/images/og-default.png`,
-      width: 1200,
-      height: 630,
+      url: `${SITE_URL}/images/logo.png`,
+      width: 512,
+      height: 512,
     },
+
     description:
       'Voice of Dharma Foundation is dedicated to preserving and sharing dharmic wisdom through education, community initiatives, spiritual resources, and cultural outreach.',
     foundingDate: '2024',
@@ -152,7 +153,7 @@ export function BlogPostingSchema({
       name: 'Voice of Dharma Foundation',
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/images/og-default.png`,
+        url: `${SITE_URL}/images/logo.png`,
       },
     },
     mainEntityOfPage: {

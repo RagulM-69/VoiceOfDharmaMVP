@@ -1,7 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
+
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -84,13 +86,24 @@ export default function Navbar({ variant = 'light', keepDark = false }: NavbarPr
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex flex-col leading-tight">
-            <span className="text-2xl font-garamond font-semibold tracking-wide" style={{ color: '#C8960C' }}>
-              Voice of Dharma
-            </span>
-            <span className={`text-xs font-inter tracking-widest uppercase ${isDark ? 'text-gray-300' : 'text-gray-400'}`}>
-              Foundation
-            </span>
+          <Link href="/" className="flex items-center gap-2">
+            <div className="relative w-12 h-12 md:w-14 md:h-14">
+              <Image 
+                src="/images/logo.png" 
+                alt="Voice of Dharma Foundation Logo" 
+                fill 
+                className="object-contain"
+                priority
+              />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-xl md:text-2xl font-garamond font-semibold tracking-wide" style={{ color: '#C8960C' }}>
+                Voice of Dharma
+              </span>
+              <span className={`text-[10px] md:text-xs font-inter tracking-widest uppercase ${isDark ? 'text-gray-300' : 'text-gray-400'}`}>
+                Foundation
+              </span>
+            </div>
           </Link>
 
           {/* Desktop nav */}
