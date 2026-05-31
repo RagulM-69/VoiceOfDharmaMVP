@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/seo/config'
 import { getSpiritualPage, getSiteSettings } from '@/lib/sanity/queries'
 import Navbar from '@/components/public/Navbar'
 import Footer from '@/components/public/Footer'
@@ -11,7 +12,6 @@ import { BreadcrumbSchema } from '@/components/seo/JsonLd'
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getSpiritualPage('philosophy')
   const title = page?.seo?.metaTitle ?? 'Philosophy of Dharma — Voice of Dharma Foundation'
   const description = page?.seo?.metaDescription ?? 'Explore the philosophy of Dharma — the nature of action, devotion, and wisdom through the Bhagavad Gita and ancient Indian thought.'

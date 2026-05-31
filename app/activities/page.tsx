@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/seo/config'
 import { getActivities, getActivitiesPage, getSiteSettings } from '@/lib/sanity/queries'
 import { urlFor } from '@/lib/sanity/image'
 import Navbar from '@/components/public/Navbar'
@@ -13,7 +14,6 @@ import { BreadcrumbSchema } from '@/components/seo/JsonLd'
 export const revalidate = 60 // New activities appear within 60 seconds
 
 export async function generateMetadata(): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const pageData = await getActivitiesPage().catch(() => null)
   const title = pageData?.seo?.metaTitle ?? 'Activities — Voice of Dharma Foundation'
   const description = pageData?.seo?.metaDescription ?? 'Follow our activities — community service, devotional events, and spiritual programmes rooted in the path of Karma, Bhakti, and Gyaan.'

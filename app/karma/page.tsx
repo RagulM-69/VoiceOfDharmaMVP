@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/seo/config'
 import { getSpiritualPage } from '@/lib/sanity/queries'
 import { getSiteSettings } from '@/lib/sanity/queries'
 import { urlForString } from '@/lib/sanity/image'
@@ -13,7 +14,6 @@ import { BreadcrumbSchema } from '@/components/seo/JsonLd'
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getSpiritualPage('karma')
   const title = page?.seo?.metaTitle ?? 'Karma Yoga — The Path of Responsible Action | Voice of Dharma Foundation'
   const description = page?.seo?.metaDescription ?? 'Explore the principle of Karma Yoga: conscious, responsible action as taught in the Bhagavad Gita. Learn how selfless service can transform life and community.'

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/seo/config'
 import { getActivityBySlug, getAllActivitySlugs, getSiteSettings } from '@/lib/sanity/queries'
 import { urlFor, urlForString } from '@/lib/sanity/image'
 import Navbar from '@/components/public/Navbar'
@@ -23,7 +24,6 @@ export async function generateStaticParams() {
 
 // ── SEO ───────────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const activity = await getActivityBySlug(params.slug)
   if (!activity) return { title: 'Activity Not Found' }
   const title = `${activity.title} — Voice of Dharma Foundation`

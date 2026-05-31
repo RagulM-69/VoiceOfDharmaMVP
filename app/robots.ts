@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/seo/config'
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -35,7 +35,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin', '/admin/', '/api/', '/unsubscribe'],
       },
     ],
-    sitemap: `${BASE_URL}/sitemap.xml`,
-    host: BASE_URL,
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   }
 }

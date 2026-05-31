@@ -10,8 +10,7 @@
  */
 
 import type { SiteSettings } from '@/lib/sanity/types'
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
+import { SITE_URL } from '@/lib/seo/config'
 
 /* ─────────────────────────────────────────────────────────────────────────────
    1. Organization Schema

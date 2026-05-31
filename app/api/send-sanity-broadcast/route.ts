@@ -22,6 +22,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { sanityServerClient } from '@/lib/sanity/client'
 import { urlForString } from '@/lib/sanity/image'
+import { SITE_URL } from '@/lib/seo/config'
 
 const resend = new Resend(process.env.RESEND_API_KEY!)
 
@@ -353,7 +354,7 @@ export async function POST(request: NextRequest) {
   const prefix    = doc.senderPrefix ?? 'promotions'
   const fromEmail = `${prefix}@voiceofdharmafoundation.org`
   const fromLabel = 'Voice of Dharma Foundation'
-  const siteUrl   = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://voiceofdharmafoundation.org'
+  const siteUrl   = SITE_URL
 
   // 8. Send emails — Resend batch API (max 100 per request)
   const BATCH_SIZE = 100

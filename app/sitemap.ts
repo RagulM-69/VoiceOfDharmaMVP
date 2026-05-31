@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 import { getAllBlogSlugs, getAllActivitySlugs } from '@/lib/sanity/queries'
+import { SITE_URL } from '@/lib/seo/config'
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
 
 /**
  * Automatic sitemap generation.
@@ -21,93 +21,93 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ── Static routes ───────────────────────────────────────────────────────────
   const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: `${BASE_URL}/`,
+      url: SITE_URL,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
-      url: `${BASE_URL}/about`,
+      url: `${SITE_URL}/about`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/activities`,
+      url: `${SITE_URL}/activities`,
       lastModified: now,
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/blog`,
+      url: `${SITE_URL}/blog`,
       lastModified: now,
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/philosophy`,
+      url: `${SITE_URL}/philosophy`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/haridas`,
+      url: `${SITE_URL}/haridas`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/letter-to-krishna`,
+      url: `${SITE_URL}/letter-to-krishna`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
-      url: `${BASE_URL}/donate`,
+      url: `${SITE_URL}/donate`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.85,
     },
     {
-      url: `${BASE_URL}/contact`,
+      url: `${SITE_URL}/contact`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     // Spiritual pillar pages
     {
-      url: `${BASE_URL}/karma`,
+      url: `${SITE_URL}/karma`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.75,
     },
     {
-      url: `${BASE_URL}/bhakti`,
+      url: `${SITE_URL}/bhakti`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.75,
     },
     {
-      url: `${BASE_URL}/gyan`,
+      url: `${SITE_URL}/gyan`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.75,
     },
     // Legal
     {
-      url: `${BASE_URL}/privacy`,
+      url: `${SITE_URL}/privacy`,
       lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.2,
     },
     {
-      url: `${BASE_URL}/terms`,
+      url: `${SITE_URL}/terms`,
       lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.2,
     },
     {
-      url: `${BASE_URL}/refund`,
+      url: `${SITE_URL}/refund`,
       lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.2,
@@ -119,7 +119,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const blogSlugs = await getAllBlogSlugs()
     blogRoutes = blogSlugs.map(({ slug }) => ({
-      url: `${BASE_URL}/blog/${slug.current}`,
+      url: `${SITE_URL}/blog/${slug.current}`,
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
@@ -133,7 +133,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const activitySlugs = await getAllActivitySlugs()
     activityRoutes = activitySlugs.map(({ slug }) => ({
-      url: `${BASE_URL}/activities/${slug.current}`,
+      url: `${SITE_URL}/activities/${slug.current}`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.65,
@@ -147,7 +147,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // try {
   //   const ebookSlugs = await getAllEbookSlugs()
   //   ebookRoutes = ebookSlugs.map(({ slug }) => ({
-  //     url: `${BASE_URL}/ebooks/${slug.current}`,
+  //     url: `${SITE_URL}/ebooks/${slug.current}`,
   //     lastModified: now,
   //     changeFrequency: 'monthly' as const,
   //     priority: 0.7,

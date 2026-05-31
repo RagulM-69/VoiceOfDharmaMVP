@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { getDonatePage, getSiteSettings } from '@/lib/sanity/queries'
+import { SITE_URL } from '@/lib/seo/config'
 import Navbar from '@/components/public/Navbar'
 import Footer from '@/components/public/Footer'
 import DonationForm from '@/components/public/DonationForm'
@@ -12,7 +13,6 @@ import Image from 'next/image'
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getDonatePage()
   const title = page?.seo?.metaTitle ?? 'Donate — Support the Mission | Voice of Dharma Foundation'
   const description = page?.seo?.metaDescription ?? 'Support the Voice of Dharma Foundation through Karma Yog, Bhakti Yog, or Gyaan Yog initiatives. All donations are eligible for 80G tax exemption.'

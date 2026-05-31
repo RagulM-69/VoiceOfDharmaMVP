@@ -7,13 +7,15 @@ import SectionWrapper from '@/components/public/SectionWrapper'
 import Link from 'next/link'
 import Image from 'next/image'
 import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+import { SITE_URL } from '@/lib/seo/config'
+
 
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getSpiritualPage('bhakti')
+
   const title = page?.seo?.metaTitle ?? 'Bhakti Yoga — The Path of Devotion | Voice of Dharma Foundation'
   const description = page?.seo?.metaDescription ?? 'Explore the principle of Bhakti Yoga: devotion, reverence, and inner connection as taught in the Bhagavad Gita. Discover how devotion transforms daily life.'
   return {

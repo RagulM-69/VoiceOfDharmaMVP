@@ -7,13 +7,15 @@ import SectionWrapper from '@/components/public/SectionWrapper'
 import Link from 'next/link'
 import Image from 'next/image'
 import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+import { SITE_URL } from '@/lib/seo/config'
+
 
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getSpiritualPage('gyan')
+
   const title = page?.seo?.metaTitle ?? 'Gyaan Yoga — The Path of Knowledge & Wisdom | Voice of Dharma Foundation'
   const description = page?.seo?.metaDescription ?? 'Explore the principle of Gyaan Yoga: the pursuit of wisdom and spiritual knowledge as taught in the Bhagavad Gita. Learn through satsangs, study circles, and dharmic texts.'
   return {

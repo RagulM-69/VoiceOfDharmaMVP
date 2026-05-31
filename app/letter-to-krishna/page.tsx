@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import LetterToKrishnaClient from './LetterToKrishnaClient'
 import Footer from '@/components/public/Footer'
 import { getSiteSettings } from '@/lib/sanity/queries'
+import { SITE_URL } from '@/lib/seo/config'
 
 /**
  * SEO Decision: INDEXED
@@ -15,8 +16,6 @@ import { getSiteSettings } from '@/lib/sanity/queries'
  * The sanctuary gate and experience are JS-driven, but the metadata,
  * page title, and description are fully visible to crawlers.
  */
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
 
 export const metadata: Metadata = {
   title: 'Letter to Krishna — Write Your Prayer Online | Voice of Dharma Foundation',

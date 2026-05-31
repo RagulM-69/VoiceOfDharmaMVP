@@ -6,12 +6,12 @@ import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
 import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+import { SITE_URL } from '@/lib/seo/config'
 
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getFounderPage()
   const title = page?.seo?.metaTitle ?? 'Hari Das — Founder | Voice of Dharma Foundation'
   const description = page?.seo?.metaDescription ?? 'Learn about Hari Das, the founder of Voice of Dharma Foundation and the spiritual guide behind the dharmic wisdom initiative.'

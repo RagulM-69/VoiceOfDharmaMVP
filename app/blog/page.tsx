@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/seo/config'
 import { getBlogPosts, getBlogPage, getSiteSettings } from '@/lib/sanity/queries'
 import { urlFor } from '@/lib/sanity/image'
 import Navbar from '@/components/public/Navbar'
@@ -13,7 +14,6 @@ import { BreadcrumbSchema } from '@/components/seo/JsonLd'
 export const revalidate = 60 // New blog posts appear within 60 seconds
 
 export async function generateMetadata(): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const blogPageData = await getBlogPage().catch(() => null)
   const title = blogPageData?.seo?.metaTitle ?? 'Blog — Voice of Dharma Foundation'
   const description = blogPageData?.seo?.metaDescription ?? 'Reflections on dharma, Bhagavad Gita, and conscious living from the Voice of Dharma Foundation.'

@@ -5,12 +5,13 @@ import Footer from '@/components/public/Footer'
 import ContactForm from '@/components/public/ContactForm'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
+import { SITE_URL } from '@/lib/seo/config'
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const settings = await getSiteSettings()
+
   const title = 'Contact Us — Voice of Dharma Foundation'
   const description = `Reach out to the Voice of Dharma Foundation${settings?.email ? ` at ${settings.email}` : ''}. We’d love to hear from you.`
   return {

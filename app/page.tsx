@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/seo/config'
 import { getHomePage, getHeroSlides, getSiteSettings } from '@/lib/sanity/queries'
 import Navbar from '@/components/public/Navbar'
 import Footer from '@/components/public/Footer'
@@ -12,7 +13,6 @@ import { OrganizationSchema, WebsiteSchema } from '@/components/seo/JsonLd'
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getHomePage()
   const title = page?.seo?.metaTitle ?? 'Voice of Dharma Foundation | Preserving Dharma Through Knowledge & Service'
   const description = page?.seo?.metaDescription ?? 'Voice of Dharma Foundation is dedicated to preserving and sharing dharmic wisdom through education, community initiatives, spiritual resources, and cultural outreach.'

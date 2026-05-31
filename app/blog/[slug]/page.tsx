@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/seo/config'
 import { getBlogPostBySlug, getAllBlogSlugs, getSiteSettings } from '@/lib/sanity/queries'
 import { urlForString } from '@/lib/sanity/image'
 import Navbar from '@/components/public/Navbar'
@@ -25,7 +26,6 @@ export async function generateStaticParams() {
 
 // ── Dynamic metadata ──────────────────────────────────────────────────────────
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const post = await getBlogPostBySlug(params.slug)
   if (!post) return { title: 'Post Not Found' }
 
