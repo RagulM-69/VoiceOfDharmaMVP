@@ -7,14 +7,28 @@ import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Link from 'next/link'
 import Image from 'next/image'
+import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getSpiritualPage('karma')
+  const title = page?.seo?.metaTitle ?? 'Karma Yoga — The Path of Responsible Action | Voice of Dharma Foundation'
+  const description = page?.seo?.metaDescription ?? 'Explore the principle of Karma Yoga: conscious, responsible action as taught in the Bhagavad Gita. Learn how selfless service can transform life and community.'
   return {
-    title: page?.seo?.metaTitle ?? 'Karma — The Path of Responsible Action | Voice of Dharma',
-    description: page?.seo?.metaDescription ?? 'Explore the principle of Karma: conscious, responsible action as taught in the Bhagavad Gita and dharmic philosophy.',
+    title,
+    description,
+    alternates: { canonical: '/karma' },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/karma`,
+      type: 'website',
+      images: [{ url: `${SITE_URL}/images/og-default.png`, width: 1200, height: 630, alt: 'Karma Yoga — Voice of Dharma Foundation' }],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: [`${SITE_URL}/images/og-default.png`] },
   }
 }
 
@@ -55,6 +69,7 @@ Every meal offered is understood as prasad — a blessing extended from the hear
 
   return (
     <>
+      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Karma Yoga', url: '/karma' }]} />
       <Navbar />
       <main>
         {/* Hero */}

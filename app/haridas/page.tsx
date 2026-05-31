@@ -5,14 +5,33 @@ import Navbar from '@/components/public/Navbar'
 import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
+import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getFounderPage()
+  const title = page?.seo?.metaTitle ?? 'Hari Das — Founder | Voice of Dharma Foundation'
+  const description = page?.seo?.metaDescription ?? 'Learn about Hari Das, the founder of Voice of Dharma Foundation and the spiritual guide behind the dharmic wisdom initiative.'
   return {
-    title: page?.seo?.metaTitle ?? 'Hari Das — Founder | Voice of Dharma Foundation',
-    description: page?.seo?.metaDescription ?? 'Learn about Hari Das, the founder of Voice of Dharma Foundation and the voice behind the dharmic wisdom initiative.',
+    title,
+    description,
+    alternates: { canonical: '/haridas' },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/haridas`,
+      type: 'profile',
+      images: [{ url: `${SITE_URL}/images/og-default.png`, width: 1200, height: 630, alt: 'Hari Das — Founder, Voice of Dharma Foundation' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${SITE_URL}/images/og-default.png`],
+    },
   }
 }
 
@@ -47,6 +66,7 @@ export default async function HaridasPage() {
 
   return (
     <>
+      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Hari Das', url: '/haridas' }]} />
       <Navbar />
       <main>
         {/* Hero */}

@@ -6,14 +6,33 @@ import HeroSlider from '@/components/public/HeroSlider'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
 import Link from 'next/link'
+import { OrganizationSchema, WebsiteSchema } from '@/components/seo/JsonLd'
+
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getHomePage()
+  const title = page?.seo?.metaTitle ?? 'Voice of Dharma Foundation | Preserving Dharma Through Knowledge & Service'
+  const description = page?.seo?.metaDescription ?? 'Voice of Dharma Foundation is dedicated to preserving and sharing dharmic wisdom through education, community initiatives, spiritual resources, and cultural outreach.'
   return {
-    title: page?.seo?.metaTitle ?? 'Voice of Dharma Foundation | Bhagavad Gita Inspired Trust',
-    description: page?.seo?.metaDescription ?? 'A spiritual trust spreading the wisdom of Karma, Bhakti and Gyan through the Bhagavad Gita.',
+    title,
+    description,
+    alternates: { canonical: '/' },
+    openGraph: {
+      title,
+      description,
+      url: SITE_URL,
+      type: 'website',
+      images: [{ url: `${SITE_URL}/images/og-default.png`, width: 1200, height: 630, alt: 'Voice of Dharma Foundation' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${SITE_URL}/images/og-default.png`],
+    },
   }
 }
 
@@ -67,6 +86,8 @@ export default async function HomePage() {
 
   return (
     <>
+      <OrganizationSchema settings={settings} />
+      <WebsiteSchema />
       <Navbar variant="dark" />
       <main>
 

@@ -9,6 +9,8 @@ import Link from 'next/link'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import type { Activity } from '@/lib/sanity/types'
+import { ActivitySchema, BreadcrumbSchema } from '@/components/seo/JsonLd'
+
 
 export const revalidate = 60
 export const dynamicParams = true
@@ -21,11 +23,31 @@ export async function generateStaticParams() {
 
 // ── SEO ───────────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const activity = await getActivityBySlug(params.slug)
   if (!activity) return { title: 'Activity Not Found' }
+  const title = `${activity.title} — Voice of Dharma Foundation`
+  const description = activity.summary ?? `${activity.title} — a dharmic activity by Voice of Dharma Foundation.`
+  const imageUrl = activity.coverImage
+    ? urlForString(activity.coverImage, 1200, 80)
+    : `${SITE_URL}/images/og-default.png`
   return {
-    title: `${activity.title} — Voice of Dharma Foundation`,
-    description: activity.summary ?? `${activity.title} — a dharmic activity by Voice of Dharma Foundation.`,
+    title,
+    description,
+    alternates: { canonical: `/activities/${params.slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/activities/${params.slug}`,
+      type: 'article',
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: activity.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [imageUrl],
+    },
   }
 }
 
@@ -110,6 +132,21 @@ export default async function ActivityDetailPage({ params }: { params: { slug: s
 
   return (
     <>
+      <ActivitySchema
+        title={activity.title}
+        description={activity.summary}
+        publishedAt={activity.publishedAt}
+        slug={activity.slug.current}
+        location={activity.location}
+        imageUrl={coverUrl ?? undefined}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: '/' },
+          { name: 'Activities', url: '/activities' },
+          { name: activity.title, url: `/activities/${activity.slug.current}` },
+        ]}
+      />
       <Navbar />
       <main>
         {/* ── Hero ── */}

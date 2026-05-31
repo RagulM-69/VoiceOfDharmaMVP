@@ -5,14 +5,33 @@ import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Link from 'next/link'
 import NextImage from 'next/image'
+import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getAboutPage()
+  const title = page?.seo?.metaTitle ?? 'About — Voice of Dharma Foundation'
+  const description = page?.seo?.metaDescription ?? 'Learn about the Voice of Dharma Foundation — its mission, areas of focus, and the vision behind it.'
   return {
-    title: page?.seo?.metaTitle ?? 'About — Voice of Dharma Foundation',
-    description: page?.seo?.metaDescription ?? 'Learn about the Voice of Dharma Foundation — its mission, areas of focus, and the vision behind it.',
+    title,
+    description,
+    alternates: { canonical: '/about' },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/about`,
+      type: 'website',
+      images: [{ url: `${SITE_URL}/images/og-default.png`, width: 1200, height: 630, alt: 'About Voice of Dharma Foundation' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${SITE_URL}/images/og-default.png`],
+    },
   }
 }
 
@@ -68,6 +87,7 @@ We do not approach this work as religious instruction. We approach it as an offe
 
   return (
     <>
+      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'About', url: '/about' }]} />
       <Navbar />
       <main>
         {/* Hero */}

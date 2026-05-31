@@ -6,14 +6,28 @@ import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Link from 'next/link'
 import Image from 'next/image'
+import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getSpiritualPage('bhakti')
+  const title = page?.seo?.metaTitle ?? 'Bhakti Yoga — The Path of Devotion | Voice of Dharma Foundation'
+  const description = page?.seo?.metaDescription ?? 'Explore the principle of Bhakti Yoga: devotion, reverence, and inner connection as taught in the Bhagavad Gita. Discover how devotion transforms daily life.'
   return {
-    title: page?.seo?.metaTitle ?? 'Bhakti — The Path of Devotion | Voice of Dharma',
-    description: page?.seo?.metaDescription ?? 'Explore the principle of Bhakti: devotion, reverence and inner connection as taught in the Bhagavad Gita.',
+    title,
+    description,
+    alternates: { canonical: '/bhakti' },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/bhakti`,
+      type: 'website',
+      images: [{ url: `${SITE_URL}/images/og-default.png`, width: 1200, height: 630, alt: 'Bhakti Yoga — Voice of Dharma Foundation' }],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: [`${SITE_URL}/images/og-default.png`] },
   }
 }
 
@@ -48,6 +62,7 @@ Through music, storytelling, and collective prayer, we create spaces where the s
 
   return (
     <>
+      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Bhakti Yoga', url: '/bhakti' }]} />
       <Navbar />
       <main>
         <section className="relative pt-32 pb-24 text-center overflow-hidden" style={{ background: '#0A1F44' }}>

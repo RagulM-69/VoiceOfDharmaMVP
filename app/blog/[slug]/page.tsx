@@ -8,6 +8,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
+import { BlogPostingSchema, BreadcrumbSchema } from '@/components/seo/JsonLd'
+
 
 export const revalidate = 60
 
@@ -23,6 +25,7 @@ export async function generateStaticParams() {
 
 // ── Dynamic metadata ──────────────────────────────────────────────────────────
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const post = await getBlogPostBySlug(params.slug)
   if (!post) return { title: 'Post Not Found' }
 
@@ -30,12 +33,30 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     ? urlForString(post.seo.ogImage, 1200, 80)
     : post.coverImage
       ? urlForString(post.coverImage, 1200, 80)
-      : undefined
+      : `${SITE_URL}/images/og-default.png`
+
+  const title = post.seo?.metaTitle ?? `${post.title} — Voice of Dharma Foundation`
+  const description = post.seo?.metaDescription ?? post.excerpt ?? ''
 
   return {
-    title: post.seo?.metaTitle ?? `${post.title} — Voice of Dharma Foundation`,
-    description: post.seo?.metaDescription ?? post.excerpt,
-    openGraph: ogImage ? { images: [{ url: ogImage }] } : undefined,
+    title,
+    description,
+    alternates: { canonical: `/blog/${params.slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/blog/${params.slug}`,
+      type: 'article',
+      publishedTime: post.publishedAt,
+      authors: ['Voice of Dharma Foundation'],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
   }
 }
 
@@ -108,6 +129,20 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
   return (
     <>
+      <BlogPostingSchema
+        title={post.title}
+        description={post.excerpt}
+        publishedAt={post.publishedAt}
+        slug={post.slug.current}
+        imageUrl={coverUrl ?? undefined}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: '/' },
+          { name: 'Blog', url: '/blog' },
+          { name: post.title, url: `/blog/${post.slug.current}` },
+        ]}
+      />
       <Navbar />
       <main>
         {/* Hero / Cover */}

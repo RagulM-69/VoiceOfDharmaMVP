@@ -5,14 +5,28 @@ import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
 import Link from 'next/link'
+import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getSpiritualPage('philosophy')
+  const title = page?.seo?.metaTitle ?? 'Philosophy of Dharma — Voice of Dharma Foundation'
+  const description = page?.seo?.metaDescription ?? 'Explore the philosophy of Dharma — the nature of action, devotion, and wisdom through the Bhagavad Gita and ancient Indian thought.'
   return {
-    title: page?.seo?.metaTitle ?? 'Philosophy — Voice of Dharma Foundation',
-    description: page?.seo?.metaDescription ?? 'Reflections on dharma, action, devotion, and knowledge from the Voice of Dharma Foundation.',
+    title,
+    description,
+    alternates: { canonical: '/philosophy' },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/philosophy`,
+      type: 'website',
+      images: [{ url: `${SITE_URL}/images/og-default.png`, width: 1200, height: 630, alt: 'Philosophy — Voice of Dharma Foundation' }],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: [`${SITE_URL}/images/og-default.png`] },
   }
 }
 
@@ -191,6 +205,7 @@ It is an invitation to observe more carefully, to act more consciously, and to u
 
   return (
     <>
+      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Philosophy', url: '/philosophy' }]} />
       <Navbar />
       <main>
 

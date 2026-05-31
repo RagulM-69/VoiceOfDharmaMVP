@@ -7,12 +7,34 @@ import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Activity } from '@/lib/sanity/types'
+import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+
 
 export const revalidate = 60 // New activities appear within 60 seconds
 
-export const metadata: Metadata = {
-  title: 'Activities — Voice of Dharma Foundation',
-  description: 'Follow our activities — community service, devotional events, and spiritual programmes rooted in the path of Karma, Bhakti, and Gyaan.',
+export async function generateMetadata(): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
+  const pageData = await getActivitiesPage().catch(() => null)
+  const title = pageData?.seo?.metaTitle ?? 'Activities — Voice of Dharma Foundation'
+  const description = pageData?.seo?.metaDescription ?? 'Follow our activities — community service, devotional events, and spiritual programmes rooted in the path of Karma, Bhakti, and Gyaan.'
+  return {
+    title,
+    description,
+    alternates: { canonical: '/activities' },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/activities`,
+      type: 'website',
+      images: [{ url: `${SITE_URL}/images/og-default.png`, width: 1200, height: 630, alt: 'Voice of Dharma Activities' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${SITE_URL}/images/og-default.png`],
+    },
+  }
 }
 
 // ── Relative timestamp helper ─────────────────────────────────────────────────
@@ -160,6 +182,7 @@ export default async function ActivitiesPage() {
 
   return (
     <>
+      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Activities', url: '/activities' }]} />
       <Navbar />
       <main>
         {/* Hero */}

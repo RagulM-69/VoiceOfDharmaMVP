@@ -9,10 +9,27 @@ import Image from 'next/image'
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const settings = await getSiteSettings()
+  const title = 'Contact Us — Voice of Dharma Foundation'
+  const description = `Reach out to the Voice of Dharma Foundation${settings?.email ? ` at ${settings.email}` : ''}. We’d love to hear from you.`
   return {
-    title: 'Contact Us — Voice of Dharma Foundation',
-    description: `Get in touch with the Voice of Dharma Foundation${settings?.email ? ` at ${settings.email}` : ''}.`,
+    title,
+    description,
+    alternates: { canonical: '/contact' },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/contact`,
+      type: 'website',
+      images: [{ url: `${SITE_URL}/images/og-default.png`, width: 1200, height: 630, alt: 'Contact Voice of Dharma Foundation' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${SITE_URL}/images/og-default.png`],
+    },
   }
 }
 

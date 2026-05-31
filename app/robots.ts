@@ -1,15 +1,41 @@
 import { MetadataRoute } from 'next'
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
+
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharma.org'
   return {
     rules: [
       {
+        // All standard crawlers — allow everything public, protect admin/API
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/admin/', '/api/'],
+        disallow: [
+          '/admin',
+          '/admin/',
+          '/api/',
+          '/unsubscribe',
+        ],
+      },
+      {
+        // Explicitly support Googlebot (inherits above but listed for GSC clarity)
+        userAgent: 'Googlebot',
+        allow: '/',
+        disallow: ['/admin', '/admin/', '/api/', '/unsubscribe'],
+      },
+      {
+        // Bingbot
+        userAgent: 'Bingbot',
+        allow: '/',
+        disallow: ['/admin', '/admin/', '/api/', '/unsubscribe'],
+      },
+      {
+        // Yandex
+        userAgent: 'YandexBot',
+        allow: '/',
+        disallow: ['/admin', '/admin/', '/api/', '/unsubscribe'],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${BASE_URL}/sitemap.xml`,
+    host: BASE_URL,
   }
 }

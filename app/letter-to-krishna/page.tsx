@@ -3,11 +3,67 @@ import LetterToKrishnaClient from './LetterToKrishnaClient'
 import Footer from '@/components/public/Footer'
 import { getSiteSettings } from '@/lib/sanity/queries'
 
+/**
+ * SEO Decision: INDEXED
+ *
+ * Rationale: The page targets genuine spiritual search intent around
+ * "write a letter to Krishna", "prayer to Krishna online", and "spiritual
+ * reflection tool". These are low-competition, high-intent keywords with
+ * real user value. The page has a unique concept with no competition on
+ * the web. Indexing it builds topical authority around devotion and bhakti.
+ *
+ * The sanctuary gate and experience are JS-driven, but the metadata,
+ * page title, and description are fully visible to crawlers.
+ */
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
+
 export const metadata: Metadata = {
-  title: 'Letter to Krishna | Voice of Dharma Foundation',
+  title: 'Letter to Krishna — Write Your Prayer Online | Voice of Dharma Foundation',
   description:
-    'A private, ephemeral sanctuary to write a letter directly to Krishna. Your words are never stored — they dissolve into the divine the moment you offer them.',
-  robots: { index: false, follow: false },
+    'A sacred, private digital sanctuary to write your letter to Krishna. Pour out your heart in prayer and devotion — your words dissolve into the divine, unseen by anyone.',
+  keywords: [
+    'letter to Krishna',
+    'write a letter to Krishna',
+    'prayer to Krishna online',
+    'spiritual reflection',
+    'devotional prayer writing',
+    'Krishna bhakti',
+    'write to God',
+    'online prayer sanctuary',
+    'Bhagavad Gita devotion',
+  ],
+  alternates: { canonical: '/letter-to-krishna' },
+  openGraph: {
+    title: 'Letter to Krishna — Write Your Prayer Online',
+    description:
+      'A sacred, private digital sanctuary to write your letter to Krishna. Pour out your heart in prayer and devotion — your words dissolve into the divine, unseen by anyone.',
+    url: `${SITE_URL}/letter-to-krishna`,
+    type: 'website',
+    images: [
+      {
+        url: `${SITE_URL}/images/og-default.png`,
+        width: 1200,
+        height: 630,
+        alt: 'Letter to Krishna — Voice of Dharma Foundation',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Letter to Krishna — Write Your Prayer Online',
+    description:
+      'A sacred, private digital sanctuary to write your letter to Krishna. Your words dissolve into the divine the moment you offer them.',
+    images: [`${SITE_URL}/images/og-default.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
 }
 
 export default async function LetterToKrishnaPage() {

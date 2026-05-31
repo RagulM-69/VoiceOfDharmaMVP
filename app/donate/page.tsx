@@ -12,10 +12,27 @@ import Image from 'next/image'
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://voiceofdharmafoundation.org'
   const page = await getDonatePage()
+  const title = page?.seo?.metaTitle ?? 'Donate — Support the Mission | Voice of Dharma Foundation'
+  const description = page?.seo?.metaDescription ?? 'Support the Voice of Dharma Foundation through Karma Yog, Bhakti Yog, or Gyaan Yog initiatives. All donations are eligible for 80G tax exemption.'
   return {
-    title: page?.seo?.metaTitle ?? 'Support the Mission — Donate | Voice of Dharma Foundation',
-    description: page?.seo?.metaDescription ?? 'Support the Voice of Dharma Foundation through Karma Yog, Bhakti Yog, or Gyaan Yog initiatives.',
+    title,
+    description,
+    alternates: { canonical: '/donate' },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/donate`,
+      type: 'website',
+      images: [{ url: `${SITE_URL}/images/og-default.png`, width: 1200, height: 630, alt: 'Donate to Voice of Dharma Foundation' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${SITE_URL}/images/og-default.png`],
+    },
   }
 }
 
