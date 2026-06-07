@@ -125,18 +125,15 @@ export default function Footer({ settings, content }: FooterProps) {
 
           {/* ── Brand + Social ── */}
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="relative w-14 h-14">
+            <div className="flex items-center mb-6">
+              <div className="relative w-36 h-36 md:w-44 md:h-44 -ml-4 -mt-4">
                 <Image 
-                  src="/images/logo-symbol.jpg" 
+                  src="/images/logo-transparent.png" 
                   alt="Voice of Dharma Foundation Logo" 
                   fill 
                   className="object-contain"
                 />
               </div>
-              <h3 className="font-garamond text-2xl font-semibold text-amber-400">
-                Voice of Dharma
-              </h3>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">{tagline}</p>
 
