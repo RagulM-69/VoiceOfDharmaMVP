@@ -195,7 +195,7 @@ Views: `donation_analytics`, `dashboard_summary`
 
 ## Developer
 
-Built by **[Your Name]**
+Built by **RAGUL M**
 - GitHub: RagulM-69(https://github.com/RagulM-69)
 - Email: ragulm780@gmail.com
 
