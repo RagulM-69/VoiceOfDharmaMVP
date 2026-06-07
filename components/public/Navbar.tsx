@@ -86,8 +86,8 @@ export default function Navbar({ variant = 'light', keepDark = false }: NavbarPr
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <div className="relative w-24 h-24 md:w-32 md:h-32 -my-4 -ml-2">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="relative w-14 h-14 md:w-16 md:h-16">
               <Image 
                 src="/images/logo-transparent.png" 
                 alt="Voice of Dharma Foundation Logo" 
@@ -95,6 +95,14 @@ export default function Navbar({ variant = 'light', keepDark = false }: NavbarPr
                 className="object-contain"
                 priority
               />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-xl md:text-2xl font-garamond font-semibold tracking-wide" style={{ color: '#C8960C' }}>
+                Voice of Dharma
+              </span>
+              <span className={`text-[10px] md:text-xs font-inter tracking-widest uppercase ${isDark ? 'text-gray-300' : 'text-gray-400'}`}>
+                Foundation
+              </span>
             </div>
           </Link>
 
