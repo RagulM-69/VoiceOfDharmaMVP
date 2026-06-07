@@ -104,6 +104,12 @@ export const metadata: Metadata = {
   //   yandex: 'your-yandex-verification-token',
   //   other: { 'msvalidate.01': 'your-bing-verification-token' },
   // },
+
+  // ── Icons ──────────────────────────────────────────────────────────────────
+  icons: {
+    icon: '/images/logo-symbol.jpg',
+    apple: '/images/logo-symbol.jpg',
+  },
 }
 
 export default function RootLayout({
@@ -114,7 +120,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${garamond.variable} ${inter.variable}`}>
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/images/logo-symbol.jpg" type="image/jpeg" />
         <meta name="theme-color" content="#0A1F44" />
       </head>
       <body className="font-inter antialiased">{children}</body>
