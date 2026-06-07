@@ -181,56 +181,7 @@ function playDivineRevealSound(ctx: AudioContext) {
   } catch {}
 }
 
-/* ─── Warm Cosmic Drone Synthesiser ───────────────────────────────── */
-function startAmbientSynth(ctx: AudioContext): { masterGain: GainNode; nodes: (OscillatorNode | GainNode | BiquadFilterNode)[] } {
-  const masterGain = ctx.createGain()
-  masterGain.gain.setValueAtTime(0.0001, ctx.currentTime)
-  masterGain.connect(ctx.destination)
 
-  const nodes: (OscillatorNode | GainNode | BiquadFilterNode)[] = []
-
-  // Warm, sacred C# major chord (136.1 Hz fundamental - Earth OM Frequency)
-  const voices = [
-    { freq: 136.1,  baseGain: 0.08, lfoFreq: 0.05, lfoDepth: 0.02 },  // Fundamental C#3
-    { freq: 204.15, baseGain: 0.05, lfoFreq: 0.07, lfoDepth: 0.015 }, // Fifth G#3
-    { freq: 272.2,  baseGain: 0.04, lfoFreq: 0.04, lfoDepth: 0.01 },  // Octave C#4
-    { freq: 340.25, baseGain: 0.03, lfoFreq: 0.03, lfoDepth: 0.008 }  // Major Third E#4 / F4
-  ]
-
-  voices.forEach(({ freq, baseGain, lfoFreq, lfoDepth }) => {
-    const osc = ctx.createOscillator()
-    const voiceGain = ctx.createGain()
-    const lfo = ctx.createOscillator()
-    const lfoGain = ctx.createGain()
-
-    osc.type = 'sine'
-    osc.frequency.setValueAtTime(freq, ctx.currentTime)
-
-    voiceGain.gain.setValueAtTime(baseGain, ctx.currentTime)
-
-    lfo.type = 'sine'
-    lfo.frequency.setValueAtTime(lfoFreq, ctx.currentTime)
-    lfoGain.gain.setValueAtTime(lfoDepth, ctx.currentTime)
-
-    lfo.connect(lfoGain)
-    lfoGain.connect(voiceGain.gain)
-
-    const filter = ctx.createBiquadFilter()
-    filter.type = 'lowpass'
-    filter.frequency.setValueAtTime(freq * 1.6, ctx.currentTime)
-
-    osc.connect(filter)
-    filter.connect(voiceGain)
-    voiceGain.connect(masterGain)
-
-    osc.start(ctx.currentTime)
-    lfo.start(ctx.currentTime)
-
-    nodes.push(osc, voiceGain, lfo, lfoGain, filter)
-  })
-
-  return { masterGain, nodes }
-}
 
 /* ─── Types ─────────────────────────────────────────────────────────── */
 interface OfferParticle {
@@ -249,8 +200,7 @@ export default function LetterToKrishnaClient() {
   const textareaRef     = useRef<HTMLTextAreaElement>(null)
   const offerCanvasRef  = useRef<HTMLCanvasElement>(null)   // full-screen disintegration canvas
   const audioCtxRef     = useRef<AudioContext | null>(null)
-  const ambientGainRef   = useRef<GainNode | null>(null)
-  const ambientNodesRef  = useRef<(OscillatorNode | GainNode | BiquadFilterNode)[]>([])
+  const bgAudioRef      = useRef<HTMLAudioElement | null>(null)
   const offerAnimRef    = useRef<number | null>(null)
   const offerPartRef    = useRef<OfferParticle[]>([])
   const offerFrameRef   = useRef(0)
@@ -296,17 +246,8 @@ export default function LetterToKrishnaClient() {
   /* ── Audio clean-up on unmount ───────────────────────────────────── */
   useEffect(() => {
     return () => {
-      if (ambientNodesRef.current) {
-        ambientNodesRef.current.forEach(node => {
-          try {
-            if (node instanceof OscillatorNode) {
-              node.stop()
-              node.disconnect()
-            } else {
-              node.disconnect()
-            }
-          } catch {}
-        })
+      if (bgAudioRef.current) {
+        bgAudioRef.current.pause()
       }
       if (audioCtxRef.current) {
         try {
@@ -352,14 +293,11 @@ export default function LetterToKrishnaClient() {
       // Play Bansuri Note
       playBansuriNote(ctx)
 
-      // Start warm ambient drone
-      const { masterGain, nodes } = startAmbientSynth(ctx)
-      ambientGainRef.current = masterGain
-      ambientNodesRef.current = nodes
-
-      // Fade in ambient drone
-      masterGain.gain.setValueAtTime(0.0001, ctx.currentTime)
-      masterGain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 2.0)
+      // Start warm ambient drone (now using audio file)
+      if (bgAudioRef.current) {
+        bgAudioRef.current.volume = 0.5
+        bgAudioRef.current.play().catch(() => {})
+      }
       setAudioOn(true)
     }
 
@@ -381,24 +319,17 @@ export default function LetterToKrishnaClient() {
       ctx.resume()
     }
 
-    const gainNode = ambientGainRef.current
-    if (!ctx || !gainNode) return
+    if (!ctx) return
 
     if (audioOn) {
-      // Fade out to silent
-      gainNode.gain.setValueAtTime(gainNode.gain.value, ctx.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.2)
+      if (bgAudioRef.current) {
+        bgAudioRef.current.pause()
+      }
       setAudioOn(false)
     } else {
-      // Start ambient if not already running
-      if (ambientNodesRef.current.length === 0) {
-        const { masterGain, nodes } = startAmbientSynth(ctx)
-        ambientGainRef.current = masterGain
-        ambientNodesRef.current = nodes
+      if (bgAudioRef.current) {
+        bgAudioRef.current.play().catch(() => {})
       }
-      // Fade in
-      gainNode.gain.setValueAtTime(gainNode.gain.value, ctx.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 1.2)
       setAudioOn(true)
     }
   }, [audioOn])
@@ -914,6 +845,11 @@ export default function LetterToKrishnaClient() {
           </div>
         </div>
       )}
+
+      {/* ════════════════════════════════════════════════════════════
+          BACKGROUND AUDIO
+      ════════════════════════════════════════════════════════════ */}
+      <audio ref={bgAudioRef} src="/audio/krishna-flute.mp3" loop preload="auto" />
 
       {/* ════════════════════════════════════════════════════════════
           SCOPED STYLES — all prefixed .ltk-

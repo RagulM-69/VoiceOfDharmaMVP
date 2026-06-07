@@ -3,8 +3,9 @@ import urllib.request
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 def process_logo():
-    source_path = r"C:\Users\Ragul\.gemini\antigravity-ide\brain\cfb3eb54-1c00-4e2a-8c79-df57a514a44a\media__1780211434436.png"
+    source_path = r"C:\Users\Ragul\.gemini\antigravity-ide\brain\cfb3eb54-1c00-4e2a-8c79-df57a514a44a\media__1780261475189.png"
     target_path = r"c:\Users\Ragul\OneDrive\Desktop\VOD\public\images\logo.png"
+
     
     print(f"Opening {source_path}")
     if not os.path.exists(source_path):
