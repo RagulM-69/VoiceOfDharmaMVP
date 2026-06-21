@@ -12,8 +12,8 @@ export const revalidate = 60
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
 
-  const title = 'Contact Us — Voice of Dharma Foundation'
-  const description = `Reach out to the Voice of Dharma Foundation${settings?.email ? ` at ${settings.email}` : ''}. We’d love to hear from you.`
+  const title = settings?.seo?.metaTitle ?? 'Contact Us — Voice of Dharma Foundation'
+  const description = settings?.seo?.metaDescription ?? `Reach out to the Voice of Dharma Foundation${settings?.email ? ` at ${settings.email}` : ''}. We’d love to hear from you.`
   return {
     title,
     description,

@@ -105,9 +105,17 @@ We believe that when wisdom is shared generously, it multiplies. This is the ess
                   {gitaRef && <cite className="block mt-4 text-amber-400 text-sm tracking-wider not-italic">— {gitaRef}</cite>}
                 </blockquote>
               )}
-              <p className="text-gray-300 text-lg leading-relaxed mt-8">
-                Knowledge, in this sense, is not separate from spiritual growth. It becomes an instrument through which one develops a deeper awareness of the interconnected nature of existence.
-              </p>
+              {page?.gitaTeachingExplanation ? (
+                page.gitaTeachingExplanation.split('\n\n').map((para, i) => (
+                  <p key={i} className="text-gray-300 text-lg leading-relaxed mt-8">
+                    {para}
+                  </p>
+                ))
+              ) : (
+                <p className="text-gray-300 text-lg leading-relaxed mt-8">
+                  Knowledge, in this sense, is not separate from spiritual growth. It becomes an instrument through which one develops a deeper awareness of the interconnected nature of existence.
+                </p>
+              )}
             </SectionWrapper>
           </div>
         </section>

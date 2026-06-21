@@ -132,9 +132,17 @@ Every meal offered is understood as prasad — a blessing extended from the hear
                   )}
                 </blockquote>
               )}
-              <p className="text-gray-300 text-lg leading-relaxed mt-8">
-                This teaching does not discourage effort or commitment. Rather, it invites individuals to focus on the quality of action itself, without becoming psychologically dependent on outcomes.
-              </p>
+              {page?.gitaTeachingExplanation ? (
+                page.gitaTeachingExplanation.split('\n\n').map((para, i) => (
+                  <p key={i} className="text-gray-300 text-lg leading-relaxed mt-8">
+                    {para}
+                  </p>
+                ))
+              ) : (
+                <p className="text-gray-300 text-lg leading-relaxed mt-8">
+                  This teaching does not discourage effort or commitment. Rather, it invites individuals to focus on the quality of action itself, without becoming psychologically dependent on outcomes.
+                </p>
+              )}
             </SectionWrapper>
           </div>
         </section>

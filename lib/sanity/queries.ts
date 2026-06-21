@@ -19,6 +19,8 @@ import type {
   DonatePage,
   Activity,
   BlogPost,
+  LegalPage,
+  LetterToKrishnaPage,
 } from './types'
 
 // ─── Shared image projection ──────────────────────────────────────────────────
@@ -136,7 +138,9 @@ export async function getSpiritualPage(slug: string): Promise<SpiritualPage | nu
       heroSubtitle,
       heroImage { ${IMAGE_FIELDS} },
       mainIntro,
+      gitaTeachingIntro,
       gitaQuote { sanskrit, translation, reference },
+      gitaTeachingExplanation,
       modernHeading,
       modernBody,
       quote2 { sanskrit, translation, reference },
@@ -325,6 +329,42 @@ export async function getActivityBySlug(slug: string): Promise<Activity | null> 
     }`,
     { slug },
     { next: { revalidate: 60 } }
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LEGAL PAGES
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getLegalPage(slug: string): Promise<LegalPage | null> {
+  return sanityServerClient.fetch(
+    `*[_type == "legalPage" && slug == $slug && ${NO_DRAFTS}][0] {
+      _id,
+      slug,
+      title,
+      lastUpdated,
+      content,
+      ${SEO_FIELDS}
+    }`,
+    { slug },
+    { next: { revalidate: 3600 } }
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LETTER TO KRISHNA PAGE
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getLetterToKrishnaPage(): Promise<LetterToKrishnaPage | null> {
+  return sanityServerClient.fetch(
+    `*[_type == "letterToKrishnaPage" && _id == "letterToKrishnaPage" && ${NO_DRAFTS}][0] {
+      _id,
+      heroTitle,
+      heroSubtitle,
+      ${SEO_FIELDS}
+    }`,
+    {},
+    { next: { revalidate: 3600 } }
   )
 }
 

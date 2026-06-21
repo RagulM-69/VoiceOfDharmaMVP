@@ -105,9 +105,17 @@ Through music, storytelling, and collective prayer, we create spaces where the s
                   {gitaRef && <cite className="block mt-4 text-amber-400 text-sm tracking-wider not-italic">— {gitaRef}</cite>}
                 </blockquote>
               )}
-              <p className="text-gray-300 text-lg leading-relaxed mt-8">
-                This teaching reflects a profound insight: devotion is not confined to specific acts of worship. Rather, it is an attitude that can transform all aspects of life into an offering.
-              </p>
+              {page?.gitaTeachingExplanation ? (
+                page.gitaTeachingExplanation.split('\n\n').map((para, i) => (
+                  <p key={i} className="text-gray-300 text-lg leading-relaxed mt-8">
+                    {para}
+                  </p>
+                ))
+              ) : (
+                <p className="text-gray-300 text-lg leading-relaxed mt-8">
+                  This teaching reflects a profound insight: devotion is not confined to specific acts of worship. Rather, it is an attitude that can transform all aspects of life into an offering.
+                </p>
+              )}
             </SectionWrapper>
           </div>
         </section>

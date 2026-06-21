@@ -79,7 +79,7 @@ When you donate, you are not merely giving money. You are participating in a lar
               <div className="text-amber-400/60 text-4xl mb-4 select-none">॥</div>
               <h1 className="font-garamond text-4xl md:text-5xl font-semibold text-white mb-5">{heroHeading}</h1>
               {heroSubheading && <p className="text-gray-300 text-lg leading-relaxed mb-6">{heroSubheading}</p>}
-              {heroBody && heroBody.split('\n\n').map((para, i) => (
+              {heroBody && heroBody.split('\n\n').map((para: string, i: number) => (
                 <p key={i} className="text-gray-400 text-base leading-relaxed mb-3 last:mb-0">{para}</p>
               ))}
               <Link href="#donate-form" className="inline-block mt-8 px-10 py-4 rounded-full font-semibold text-white text-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style={{ background: 'linear-gradient(135deg, #C8960C, #F5A623)' }}>
@@ -95,7 +95,7 @@ When you donate, you are not merely giving money. You are participating in a lar
               <SectionWrapper>
                 <div className="section-divider mb-4" />
                 <h2 className="font-garamond text-3xl md:text-4xl font-semibold text-krishna-blue mb-8">{whyHeading}</h2>
-                {whyBody.split('\n\n').map((para, i) => (
+                {whyBody.split('\n\n').map((para: string, i: number) => (
                   <p key={i} className="text-gray-700 text-lg leading-relaxed mb-5 last:mb-0">{para}</p>
                 ))}
               </SectionWrapper>
@@ -125,7 +125,7 @@ When you donate, you are not merely giving money. You are participating in a lar
                         {card.sub && <p className="text-amber-400/80 text-sm uppercase tracking-wide mb-4">{card.sub}</p>}
                         <div className="w-8 h-0.5 mb-5" style={{ background: 'rgba(200,150,12,0.5)' }} />
                         <div className="flex-1">
-                          {card.body.split('\n\n').map((para, j) => (
+                          {card.body.split('\n\n').map((para: string, j: number) => (
                             <p key={j} className="text-gray-300 text-sm leading-relaxed mb-3 last:mb-0">{para}</p>
                           ))}
                         </div>

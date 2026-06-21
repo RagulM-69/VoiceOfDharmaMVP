@@ -106,6 +106,7 @@ export interface SpiritualPage {
   mainIntro?: string
   gitaTeachingIntro?: string
   gitaQuote?: GitaQuote    // quote after section 1
+  gitaTeachingExplanation?: string
   modernHeading?: string
   modernBody?: string
   quote2?: GitaQuote       // quote after section 2 (Katha Upanishad)
@@ -246,5 +247,23 @@ export interface BlogPost {
   gitaQuote?: GitaQuote
   publishedAt: string
   isFeatured?: boolean
+  seo?: SeoFields
+}
+
+// ── Legal Page ────────────────────────────────────────────────────────────────
+export interface LegalPage {
+  _id: string
+  slug: 'privacy' | 'terms' | 'refund'
+  title?: string
+  lastUpdated?: string
+  content?: unknown[] // Portable Text
+  seo?: SeoFields
+}
+
+// ── Letter to Krishna Page ────────────────────────────────────────────────────
+export interface LetterToKrishnaPage {
+  _id: string
+  heroTitle?: string
+  heroSubtitle?: string
   seo?: SeoFields
 }
