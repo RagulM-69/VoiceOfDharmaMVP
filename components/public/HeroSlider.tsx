@@ -45,6 +45,7 @@ export default function HeroSlider({ slides, gitaQuote, gitaQuoteRef }: HeroSlid
     karma: '/karma',
     bhakti: '/bhakti',
     gyan: '/gyan',
+    gyaan: '/gyan', // handle double-a variant stored in Sanity
   }
 
   // Custom focus properties for desktop where heavy cropping happens on landscape

@@ -127,7 +127,9 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
 
 export async function getSpiritualPage(slug: string): Promise<SpiritualPage | null> {
   return sanityServerClient.fetch(
-    `*[_type == "spiritualPage" && slug.current == $slug && ${NO_DRAFTS}][0] {
+    // slug is stored as a plain string (schema type:'string'), NOT a Sanity slug object
+    // so we must match slug == $slug, NOT slug.current == $slug
+    `*[_type == "spiritualPage" && slug == $slug && ${NO_DRAFTS}][0] {
       _id,
       slug,
       heroTitle,
