@@ -53,9 +53,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to save submission' }, { status: 500 })
     }
 
-    // Send auto-reply to user + notify admin at voiceofdharmaofficial@gmail.com (both non-blocking)
-    sendContactAutoReply({ name, email, phone }).catch(console.error)
-    sendContactAdminNotification({ name, email, phone, message }).catch(console.error)
+    // Send auto-reply to user + notify admin
+    // Both are awaited so errors surface in Vercel logs
+    const [autoReplyResult, adminNotifResult] = await Promise.allSettled([
+      sendContactAutoReply({ name, email, phone }),
+      sendContactAdminNotification({ name, email, phone, message }),
+    ])
+
+    if (autoReplyResult.status === 'rejected') {
+      console.error('[Contact] Auto-reply email FAILED:', autoReplyResult.reason)
+    } else if (!autoReplyResult.value?.success) {
+      console.error('[Contact] Auto-reply email returned failure:', autoReplyResult.value)
+    }
+
+    if (adminNotifResult.status === 'rejected') {
+      console.error('[Contact] Admin notification email FAILED:', adminNotifResult.reason)
+    } else if (!adminNotifResult.value?.success) {
+      console.error('[Contact] Admin notification email returned failure:', adminNotifResult.value)
+    }
 
     return NextResponse.json({ success: true })
   } catch (err) {
