@@ -238,3 +238,109 @@ export function ActivitySchema({
     />
   )
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   6. Book Schema — applied on each publication detail page
+   https://schema.org/Book
+───────────────────────────────────────────────────────────────────────────── */
+interface BookSchemaProps {
+  title: string
+  author: string
+  description?: string
+  slug: string
+  imageUrl?: string
+  isbn?: string
+  publisher?: string
+  numberOfPages?: number
+  inLanguage?: string
+  datePublished?: string
+}
+
+export function BookSchema({
+  title,
+  author,
+  description,
+  slug,
+  imageUrl,
+  isbn,
+  publisher,
+  numberOfPages,
+  inLanguage,
+  datePublished,
+}: BookSchemaProps) {
+  const schema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Book',
+    name: title,
+    author: {
+      '@type': 'Person',
+      name: author,
+    },
+    url: `${SITE_URL}/publications/${slug}`,
+    ...(description ? { description } : {}),
+    ...(isbn ? { isbn } : {}),
+    ...(inLanguage ? { inLanguage } : {}),
+    ...(numberOfPages ? { numberOfPages } : {}),
+    ...(datePublished ? { datePublished } : {}),
+    publisher: {
+      '@type': 'Organization',
+      name: publisher ?? 'Voice of Dharma Foundation',
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/images/logo.png`,
+      },
+    },
+    ...(imageUrl
+      ? {
+          image: {
+            '@type': 'ImageObject',
+            url: imageUrl,
+            width: 800,
+            height: 1200,
+          },
+        }
+      : {}),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/publications/${slug}`,
+    },
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   7. Collection Page Schema — applied on the /publications listing page
+───────────────────────────────────────────────────────────────────────────── */
+interface CollectionPageSchemaProps {
+  title: string
+  description?: string
+}
+
+export function CollectionPageSchema({ title, description }: CollectionPageSchemaProps) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    ...(description ? { description } : {}),
+    url: `${SITE_URL}/publications`,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Voice of Dharma Foundation',
+      url: SITE_URL,
+    },
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}

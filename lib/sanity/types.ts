@@ -267,3 +267,75 @@ export interface LetterToKrishnaPage {
   heroSubtitle?: string
   seo?: SeoFields
 }
+
+// ── Publications ──────────────────────────────────────────────────────────────
+
+export interface PurchasePlatform {
+  _key: string
+  platformName: string
+  platformLogo?: SanityImage
+  buttonText: string
+  purchaseUrl: string
+  openInNewTab?: boolean
+  enabled?: boolean
+  displayOrder?: number
+}
+
+export interface PublicationPreview {
+  enablePreview?: boolean
+  previewTitle?: string
+  previewDescription?: string
+  previewImages?: (SanityImage & { alt?: string; caption?: string })[]
+  endPreviewMessage?: string
+  endPreviewButtonText?: string
+  endPreviewButtonUrl?: string
+}
+
+/** Full Publication — used on the detail page */
+export interface Publication {
+  _id: string
+  title: string
+  slug: { current: string }
+  author: string
+  subtitle?: string
+  tagline?: string
+  coverImage?: SanityImage
+  thumbnail?: SanityImage
+  shortDescription?: string
+  fullDescription?: unknown[]  // Portable Text
+  purpose?: string
+  whoShouldRead?: string
+  category?: string
+  language?: string
+  publisher?: string
+  publicationDate?: string
+  edition?: string
+  isbn?: string
+  totalPages?: number
+  readingTime?: string
+  bookFormat?: string
+  tags?: string[]
+  isPublished?: boolean
+  isHidden?: boolean
+  isFeatured?: boolean
+  isComingSoon?: boolean
+  displayOrder?: number
+  purchasePlatforms?: PurchasePlatform[]
+  preview?: PublicationPreview
+  relatedPublications?: PublicationListItem[]
+  seo?: SeoFields & { canonicalUrl?: string }
+}
+
+/** Lightweight Publication — used on listing page / related books cards */
+export interface PublicationListItem {
+  _id: string
+  title: string
+  slug: { current: string }
+  author: string
+  tagline?: string
+  coverImage?: SanityImage
+  thumbnail?: SanityImage
+  isFeatured?: boolean
+  isComingSoon?: boolean
+  displayOrder?: number
+}

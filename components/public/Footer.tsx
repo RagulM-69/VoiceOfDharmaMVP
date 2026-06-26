@@ -80,14 +80,15 @@ const PLATFORM_ORDER = ['instagram', 'youtube', 'facebook', 'whatsapp', 'twitter
 
 // Default quick links — used when Sanity footerQuickLinks is empty
 const DEFAULT_QUICK_LINKS = [
-  { href: '/',           label: 'Home' },
-  { href: '/about',      label: 'About' },
-  { href: '/activities', label: 'Activities' },
-  { href: '/blog',       label: 'Blog' },
-  { href: '/philosophy', label: 'Philosophy' },
-  { href: '/haridas',    label: 'Haridas' },
-  { href: '/donate',     label: 'Donate' },
-  { href: '/contact',    label: 'Contact' },
+  { href: '/',             label: 'Home' },
+  { href: '/about',        label: 'About' },
+  { href: '/activities',   label: 'Activities' },
+  { href: '/blog',         label: 'Blog' },
+  { href: '/philosophy',   label: 'Philosophy' },
+  { href: '/publications', label: 'Publications' },
+  { href: '/haridas',      label: 'Haridas' },
+  { href: '/donate',       label: 'Donate' },
+  { href: '/contact',      label: 'Contact' },
 ]
 
 export default function Footer({ settings, content }: FooterProps) {

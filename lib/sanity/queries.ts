@@ -21,6 +21,8 @@ import type {
   BlogPost,
   LegalPage,
   LetterToKrishnaPage,
+  Publication,
+  PublicationListItem,
 } from './types'
 
 // ─── Shared image projection ──────────────────────────────────────────────────
@@ -415,6 +417,119 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
       publishedAt,
       isFeatured,
       ${SEO_FIELDS}
+    }`,
+    { slug },
+    { next: { revalidate: 60 } }
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PUBLICATIONS
+// Filter: isPublished == true && !isHidden && no drafts
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Shared image projection reused in publication queries
+const IMAGE_FIELDS_PUB = `
+  asset,
+  hotspot,
+  alt,
+  caption
+`
+
+export async function getPublications(limit = 100): Promise<PublicationListItem[]> {
+  return sanityServerClient.fetch(
+    `*[_type == "publication" && isPublished == true && isHidden != true && ${NO_DRAFTS}]
+      | order(displayOrder asc, _createdAt desc)
+      [0...${limit}] {
+      _id,
+      title,
+      slug,
+      author,
+      tagline,
+      coverImage { ${IMAGE_FIELDS_PUB} },
+      thumbnail  { ${IMAGE_FIELDS_PUB} },
+      isFeatured,
+      isComingSoon,
+      displayOrder
+    }`,
+    {},
+    { next: { revalidate: 60 } }
+  )
+}
+
+export async function getAllPublicationSlugs(): Promise<{ slug: { current: string } }[]> {
+  return sanityServerClient.fetch(
+    `*[_type == "publication" && ${NO_DRAFTS} && defined(slug.current)] { slug }`,
+    {},
+    { next: { revalidate: 300 } }
+  )
+}
+
+export async function getPublicationBySlug(slug: string): Promise<Publication | null> {
+  return sanityServerClient.fetch(
+    `*[_type == "publication" && slug.current == $slug && ${NO_DRAFTS}][0] {
+      _id,
+      title,
+      slug,
+      author,
+      subtitle,
+      tagline,
+      coverImage    { ${IMAGE_FIELDS_PUB} },
+      thumbnail     { ${IMAGE_FIELDS_PUB} },
+      shortDescription,
+      fullDescription,
+      purpose,
+      whoShouldRead,
+      category,
+      language,
+      publisher,
+      publicationDate,
+      edition,
+      isbn,
+      totalPages,
+      readingTime,
+      bookFormat,
+      tags,
+      isPublished,
+      isHidden,
+      isFeatured,
+      isComingSoon,
+      displayOrder,
+      purchasePlatforms[] {
+        _key,
+        platformName,
+        platformLogo { ${IMAGE_FIELDS_PUB} },
+        buttonText,
+        purchaseUrl,
+        openInNewTab,
+        enabled,
+        displayOrder
+      },
+      preview {
+        enablePreview,
+        previewTitle,
+        previewDescription,
+        previewImages[] { ${IMAGE_FIELDS_PUB} },
+        endPreviewMessage,
+        endPreviewButtonText,
+        endPreviewButtonUrl
+      },
+      relatedPublications[]->{
+        _id,
+        title,
+        slug,
+        author,
+        tagline,
+        coverImage { ${IMAGE_FIELDS_PUB} },
+        isFeatured,
+        isComingSoon
+      },
+      seo {
+        metaTitle,
+        metaDescription,
+        ogImage { ${IMAGE_FIELDS_PUB} },
+        canonicalUrl
+      }
     }`,
     { slug },
     { next: { revalidate: 60 } }

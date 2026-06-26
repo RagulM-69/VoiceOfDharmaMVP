@@ -15,6 +15,7 @@ const navLinks = [
   { href: '/philosophy',          label: 'Philosophy' },
   { href: '/haridas',             label: 'Haridas' },
   { href: '/letter-to-krishna',   label: 'Letter to Krishna' },
+  { href: '/publications',        label: 'Publications' },
   { href: '/contact',             label: 'Contact' },
 ]
 

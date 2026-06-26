@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { getAllBlogSlugs, getAllActivitySlugs } from '@/lib/sanity/queries'
+import { getAllBlogSlugs, getAllActivitySlugs, getAllPublicationSlugs } from '@/lib/sanity/queries'
 import { SITE_URL } from '@/lib/seo/config'
 
 
@@ -66,6 +66,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${SITE_URL}/donate`,
       lastModified: now,
       changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
+      url: `${SITE_URL}/publications`,
+      lastModified: now,
+      changeFrequency: 'weekly',
       priority: 0.85,
     },
     {
@@ -142,17 +148,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Sanity unavailable — degrade gracefully
   }
 
-  // ── Future: E-book pages (uncomment when ready) ────────────────────────────
-  // let ebookRoutes: MetadataRoute.Sitemap = []
-  // try {
-  //   const ebookSlugs = await getAllEbookSlugs()
-  //   ebookRoutes = ebookSlugs.map(({ slug }) => ({
-  //     url: `${SITE_URL}/ebooks/${slug.current}`,
-  //     lastModified: now,
-  //     changeFrequency: 'monthly' as const,
-  //     priority: 0.7,
-  //   }))
-  // } catch {}
+  // ── Dynamic: Publication pages from Sanity ─────────────────────────────────
+  let publicationRoutes: MetadataRoute.Sitemap = []
+  try {
+    const publicationSlugs = await getAllPublicationSlugs()
+    publicationRoutes = publicationSlugs.map(({ slug }) => ({
+      url: `${SITE_URL}/publications/${slug.current}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.75,
+    }))
+  } catch {
+    // Sanity unavailable — degrade gracefully
+  }
 
-  return [...staticRoutes, ...blogRoutes, ...activityRoutes]
+  return [...staticRoutes, ...blogRoutes, ...activityRoutes, ...publicationRoutes]
 }
