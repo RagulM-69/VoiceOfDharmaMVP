@@ -14,7 +14,7 @@ The primary goal of the site is to inspire visitors and convert that inspiration
 
 ## Live Site
 
-🌐 [voiceofdharma.org](https://voice-of-dharma-mvp.vercel.app/)
+🌐 [voiceofdharmafoundation.org](https://voice-of-dharma-mvp.vercel.app/)
 
 ---
 
