@@ -21,7 +21,7 @@ The primary goal of the site is to inspire visitors and convert that inspiration
 ## What's Built
 
 ### Public Pages
-- **Home** — Hero slider (Karma / Bhakti / Gyaan), About section, Mission, Donate CTA
+- **Home** — Hero slider (Karma / Bhakti / Gyaan), About section, Mission, Donate CTA.
 - **About** — Foundation story, areas of focus, connect section
 - **Karma / Bhakti / Gyaan** — Individual spiritual path pages with Gita teachings
 - **Philosophy** — Deep reflections on dharma, life, and understanding
