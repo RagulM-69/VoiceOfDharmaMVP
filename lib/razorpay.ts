@@ -21,12 +21,42 @@ export function verifyRazorpaySignature(
   paymentId: string,
   signature: string
 ): boolean {
+  const secret = process.env.RAZORPAY_KEY_SECRET
+  if (!secret || !orderId || !paymentId || !signature) return false
   const body = `${orderId}|${paymentId}`
   const expectedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
+    .createHmac('sha256', secret)
     .update(body)
     .digest('hex')
-  return expectedSignature === signature
+
+  try {
+    const a = Buffer.from(expectedSignature, 'utf8')
+    const b = Buffer.from(signature, 'utf8')
+    return a.length === b.length && crypto.timingSafeEqual(a, b)
+  } catch {
+    return false
+  }
+}
+
+export function verifyRazorpayWebhookSignature(
+  rawBody: string,
+  signature: string
+): boolean {
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET
+  if (!secret || !rawBody || !signature) return false
+
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(rawBody)
+    .digest('hex')
+
+  try {
+    const a = Buffer.from(expectedSignature, 'utf8')
+    const b = Buffer.from(signature, 'utf8')
+    return a.length === b.length && crypto.timingSafeEqual(a, b)
+  } catch {
+    return false
+  }
 }
 
 export async function createRazorpayOrder(amount: number, receiptId: string) {
@@ -37,3 +67,4 @@ export async function createRazorpayOrder(amount: number, receiptId: string) {
     receipt: receiptId,
   })
 }
+

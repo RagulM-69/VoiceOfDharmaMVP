@@ -101,6 +101,7 @@ export interface RateLimitLog {
 declare global {
   interface Window {
     Razorpay: new (options: RazorpayOptions) => RazorpayInstance
+    grecaptcha: any
   }
 }
 
@@ -117,6 +118,7 @@ export interface RazorpayOptions {
     email: string
     contact: string
   }
+  notes?: Record<string, string>
   theme: {
     color: string
   }
@@ -133,4 +135,6 @@ export interface RazorpayPaymentResponse {
 
 export interface RazorpayInstance {
   open: () => void
+  on: (event: string, handler: (response: any) => void) => void
 }
+

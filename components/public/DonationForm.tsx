@@ -29,6 +29,18 @@ interface FormErrors {
   purpose?: string
 }
 
+const loadRazorpayScript = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') return resolve(false)
+    if (window.Razorpay) return resolve(true)
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.onload = () => resolve(true)
+    script.onerror = () => resolve(false)
+    document.body.appendChild(script)
+  })
+}
+
 export default function DonationForm() {
   const searchParams = useSearchParams()
   const causeParam = searchParams.get('cause')
@@ -38,7 +50,6 @@ export default function DonationForm() {
     return valid.includes(causeParam ?? '') ? (causeParam as string) : 'general'
   })
 
-  // Keep in sync if URL changes (e.g. back navigation)
   useEffect(() => {
     const valid = PURPOSES.map((p) => p.id)
     if (causeParam && valid.includes(causeParam)) {
@@ -75,6 +86,20 @@ export default function DonationForm() {
     return e
   }
 
+  const getRecaptchaToken = async (): Promise<string | undefined> => {
+    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+    if (!siteKey || typeof window === 'undefined' || !window.grecaptcha) return undefined
+    try {
+      return await new Promise<string>((resolve) => {
+        window.grecaptcha.ready(() => {
+          window.grecaptcha.execute(siteKey, { action: 'donate' }).then(resolve)
+        })
+      })
+    } catch {
+      return undefined
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const v = validate()
@@ -86,35 +111,137 @@ export default function DonationForm() {
     setLoading(true)
     setStatusMsg(null)
 
-    // Simulate a brief processing moment, then save interest and show coming-soon screen
-    await new Promise((resolve) => setTimeout(resolve, 800))
+    const amount = getAmount()
 
-    // Save donation interest to DB (non-blocking for UX, but awaited)
-    try {
-      await fetch('/api/donate-interest', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          amount: getAmount(),
-          purpose,
-          message: formData.message,
-        }),
-      })
-    } catch { /* non-critical, ignore */ }
+    // 1. Record donation interest lead (non-blocking)
+    fetch('/api/donate-interest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        amount,
+        purpose,
+        message: formData.message,
+      }),
+    }).catch(console.error)
 
-    setLoading(false)
-    setStatusMsg('PAYMENT_COMING_SOON')
-
-    // Register subscriber if consent given (non-blocking)
+    // Register newsletter subscriber if consent given (non-blocking)
     if (newsletterConsent) {
       fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: formData.name, email: formData.email }),
       }).catch(console.error)
+    }
+
+    try {
+      // 2. Fetch reCAPTCHA token if available
+      const recaptchaToken = await getRecaptchaToken()
+
+      // 3. Create server-side Razorpay order
+      const res = await fetch('/api/donate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          amount,
+          purpose,
+          message: formData.message,
+          recaptchaToken,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok || data.error) {
+        setStatusMsg(data.error || 'Failed to initialize donation order. Please try again.')
+        setLoading(false)
+        return
+      }
+
+      // 4. Load Razorpay SDK Script
+      const isLoaded = await loadRazorpayScript()
+      if (!isLoaded) {
+        setStatusMsg('Could not load payment checkout script. Please check your internet connection.')
+        setLoading(false)
+        return
+      }
+
+      const purposeObj = PURPOSES.find((p) => p.id === purpose)
+      const purposeLabel = purposeObj ? purposeObj.label : 'General Fund'
+
+      // 5. Open Razorpay Standard Checkout modal
+      const options = {
+        key: data.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: data.currency || 'INR',
+        name: 'Voice of Dharma Foundation',
+        description: `Offering for ${purposeLabel}`,
+        order_id: data.orderId,
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        notes: {
+          purpose,
+          message: formData.message || '',
+        },
+        theme: {
+          color: '#C8960C',
+        },
+        handler: async function (response: {
+          razorpay_order_id: string
+          razorpay_payment_id: string
+          razorpay_signature: string
+        }) {
+          setLoading(true)
+          setStatusMsg('Verifying payment signature with server...')
+          try {
+            const verifyRes = await fetch('/api/donate/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            })
+            const verifyData = await verifyRes.json()
+
+            if (verifyRes.ok && verifyData.success) {
+              window.location.href = `/donate/success?txn=${verifyData.paymentId || response.razorpay_payment_id}`
+            } else {
+              setStatusMsg(verifyData.error || 'Payment verification failed. Please contact support.')
+              setLoading(false)
+            }
+          } catch {
+            setStatusMsg('Network error during verification. A receipt will be sent to your email once processed.')
+            setLoading(false)
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false)
+            setStatusMsg('Checkout modal closed. Your order is reserved; you may click below to try again.')
+          },
+        },
+      }
+
+      const rzp = new window.Razorpay(options)
+      rzp.on('payment.failed', function (response: any) {
+        setLoading(false)
+        setStatusMsg(response.error?.description || 'Payment failed. Please try a different payment method.')
+      })
+      rzp.open()
+    } catch (err) {
+      console.error('Checkout error:', err)
+      setStatusMsg('An error occurred during checkout setup. Please try again.')
+      setLoading(false)
     }
   }
 
@@ -136,7 +263,6 @@ export default function DonationForm() {
       )}
 
       <form onSubmit={handleSubmit} noValidate className="space-y-8">
-
         {/* Purpose selector */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">
@@ -188,7 +314,7 @@ export default function DonationForm() {
             ))}
           </div>
 
-          {/* Custom amount — fixed ₹ symbol spacing */}
+          {/* Custom amount */}
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold select-none pointer-events-none">
               ₹
@@ -284,44 +410,9 @@ export default function DonationForm() {
           </span>
         </label>
 
-        {/* Status / Coming Soon */}
+        {/* Status Message */}
         <AnimatePresence>
-          {statusMsg === 'PAYMENT_COMING_SOON' ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl p-8 text-center"
-              style={{ background: 'rgba(10,31,68,0.04)', border: '2px solid rgba(200,150,12,0.3)' }}
-            >
-              <div className="text-4xl mb-4 select-none">🙏</div>
-              <h3 className="font-garamond text-2xl font-semibold text-krishna-blue mb-3">
-                The thought of giving is itself a sacred act.
-              </h3>
-              <p className="text-gray-600 leading-relaxed mb-4">
-                Dear <strong>{formData.name}</strong>, your intention to support the Voice of Dharma Foundation
-                {purpose !== 'general' ? ` through ${PURPOSES.find(p => p.id === purpose)?.label}` : ''} is deeply appreciated.
-              </p>
-              <div
-                className="inline-block px-6 py-2 rounded-full text-sm font-semibold mb-4"
-                style={{ background: 'rgba(200,150,12,0.12)', color: '#C8960C', border: '1px solid rgba(200,150,12,0.3)' }}
-              >
-                ₹{getAmount().toLocaleString('en-IN')} — {PURPOSES.find(p => p.id === purpose)?.label}
-              </div>
-              <p className="text-gray-500 text-sm leading-relaxed mb-6">
-                Our secure payment gateway is currently being set up as part of the foundation&apos;s legal registration process.
-                We will notify you as soon as it is live. Your details have been noted.
-              </p>
-              <p className="text-gray-400 text-xs italic">
-                &ldquo;Whoever offers Me with devotion a leaf, a flower, fruit, or water — that I accept.&rdquo; — Bhagavad Gita 9.26
-              </p>
-              <button
-                onClick={() => { setStatusMsg(null); setFormData({ name: '', email: '', phone: '', message: '', customAmount: '' }) }}
-                className="mt-6 text-sm text-amber-600 hover:text-amber-700 underline underline-offset-2"
-              >
-                Reset form
-              </button>
-            </motion.div>
-          ) : statusMsg ? (
+          {statusMsg && (
             <motion.p
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -330,27 +421,26 @@ export default function DonationForm() {
             >
               {statusMsg}
             </motion.p>
-          ) : null}
+          )}
         </AnimatePresence>
 
-        {/* Submit — only show if no coming-soon state */}
-        {statusMsg !== 'PAYMENT_COMING_SOON' && (
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-4 rounded-full font-semibold text-white text-lg transition-all duration-300 ${
-              loading ? 'opacity-60 cursor-not-allowed' : 'hover:-translate-y-1 hover:shadow-xl'
-            }`}
-            style={{ background: 'linear-gradient(135deg, #C8960C, #F5A623)' }}
-          >
-            {loading ? 'Processing...' : `Proceed to Donate ₹${getAmount().toLocaleString('en-IN') || '—'}`}
-          </button>
-        )}
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-4 rounded-full font-semibold text-white text-lg transition-all duration-300 ${
+            loading ? 'opacity-60 cursor-not-allowed' : 'hover:-translate-y-1 hover:shadow-xl'
+          }`}
+          style={{ background: 'linear-gradient(135deg, #C8960C, #F5A623)' }}
+        >
+          {loading ? 'Processing Order...' : `Proceed to Donate ₹${getAmount().toLocaleString('en-IN') || '—'}`}
+        </button>
 
         <p className="text-xs text-gray-500 text-center">
-          Secure payment gateway coming soon · All details are kept private
+          Encrypted 256-bit SSL transaction · Official receipt dispatched automatically
         </p>
       </form>
     </div>
   )
 }
+

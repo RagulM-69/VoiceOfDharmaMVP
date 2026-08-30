@@ -13,18 +13,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify Razorpay HMAC signature
-    let signatureValid = false
-    try {
-      signatureValid = verifyRazorpaySignature(
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature
-      )
-    } catch {
-      // In dev without keys, accept mock payments
-      if (process.env.NODE_ENV === 'development' && !process.env.RAZORPAY_KEY_SECRET) {
-        signatureValid = true
-      }
+    let signatureValid = verifyRazorpaySignature(
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature
+    )
+
+    // In dev without keys, accept mock payments
+    if (!signatureValid && process.env.NODE_ENV === 'development' && !process.env.RAZORPAY_KEY_SECRET) {
+      signatureValid = true
     }
 
     if (!signatureValid) {
@@ -36,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = createSupabaseServiceClient()
 
-    // Fetch the pending donation
+    // Fetch the donation record
     const { data: donation, error: fetchError } = await supabase
       .from('donations')
       .select('*')
@@ -47,36 +44,61 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Donation record not found' }, { status: 404 })
     }
 
-    // Update donation to success
-    const { error: updateError } = await supabase
+    // Quick idempotency exit: if already verified AND receipt sent, return early
+    if (donation.status === 'success' && donation.receipt_sent) {
+      return NextResponse.json({
+        success: true,
+        paymentId: donation.razorpay_payment_id || razorpay_payment_id,
+        note: 'already_verified',
+      })
+    }
+
+    // Atomic claim: set status = 'success' AND claim receipt_sent = true WHERE receipt_sent = false
+    const { data: claimedRows } = await supabase
       .from('donations')
       .update({
         status: 'success',
         razorpay_payment_id,
         razorpay_signature,
+        receipt_sent: true,
       })
       .eq('id', donation.id)
+      .eq('receipt_sent', false)
+      .select()
 
-    if (updateError) {
-      console.error('Failed to update donation:', updateError)
-      return NextResponse.json({ error: 'Database update failed' }, { status: 500 })
-    }
+    const winsReceiptClaim = Array.isArray(claimedRows) && claimedRows.length > 0
 
-    // Send receipt email
-    const receiptResult = await sendDonationReceipt({
-      name: donation.name,
-      email: donation.email,
-      amount: donation.amount,
-      purpose: donation.purpose,
-      razorpay_payment_id,
-      created_at: donation.created_at,
-    })
-
-    if (receiptResult.success) {
+    // Ensure status is marked success even if another process won the receipt claim
+    if (!winsReceiptClaim && donation.status !== 'success') {
       await supabase
         .from('donations')
-        .update({ receipt_sent: true })
+        .update({
+          status: 'success',
+          razorpay_payment_id,
+          razorpay_signature,
+        })
         .eq('id', donation.id)
+    }
+
+    // If this thread won the atomic claim, dispatch donor receipt email
+    if (winsReceiptClaim) {
+      const receiptResult = await sendDonationReceipt({
+        name: donation.name,
+        email: donation.email,
+        amount: donation.amount,
+        purpose: donation.purpose,
+        razorpay_payment_id,
+        created_at: donation.created_at,
+      })
+
+      if (!receiptResult.success) {
+        console.error('[Verify API] Donor receipt email delivery failed. Reverting claim for retry:', receiptResult.error)
+        // Revert claim so subsequent retry can attempt delivery again
+        await supabase
+          .from('donations')
+          .update({ receipt_sent: false })
+          .eq('id', donation.id)
+      }
     }
 
     // Send admin notification (non-blocking)
@@ -96,3 +118,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+

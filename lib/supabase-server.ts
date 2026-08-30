@@ -27,9 +27,14 @@ export function createSupabaseServerClient() {
 
 export function createSupabaseServiceClient() {
   const { createClient } = require('@supabase/supabase-js')
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY !== 'PASTE_CLIENT_SERVICE_ROLE_KEY_HERE'
+      ? process.env.SUPABASE_SERVICE_ROLE_KEY
+      : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    key,
     {
       auth: {
         autoRefreshToken: false,
@@ -38,3 +43,4 @@ export function createSupabaseServiceClient() {
     }
   )
 }
+

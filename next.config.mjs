@@ -8,7 +8,7 @@ const nextConfig = {
       // Supabase storage (existing)
       {
         protocol: 'https',
-        hostname: 'rbfcflciaasjwtjjjosv.supabase.co',
+        hostname: 'arfrjszsqcyzdeyzodde.supabase.co',
         port: '',
         pathname: '/storage/v1/object/public/**',
       },

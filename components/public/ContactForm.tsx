@@ -19,15 +19,6 @@ interface FormErrors {
 const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
 const RECAPTCHA_ENABLED = !!SITE_KEY
 
-declare global {
-  interface Window {
-    grecaptcha: {
-      ready: (cb: () => void) => void
-      execute: (siteKey: string, opts: { action: string }) => Promise<string>
-    }
-  }
-}
-
 export default function ContactForm() {
   const [formData, setFormData] = useState<FormData>({ name: '', email: '', phone: '', message: '' })
   const [errors, setErrors] = useState<FormErrors>({})
