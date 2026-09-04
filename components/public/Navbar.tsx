@@ -233,7 +233,7 @@ export default function Navbar({ variant = 'light', keepDark = false }: NavbarPr
         </div>
       </header>
 
-      {/* ── Mobile Drawer (matching reference design in sacred theme) ── */}
+      {/* ── Mobile Drawer (Clean Minimalistic Professional Layout) ── */}
       <AnimatePresence>
         {menuOpen && (
           <div className="fixed inset-0 z-50 md:hidden flex justify-end">
@@ -242,27 +242,27 @@ export default function Navbar({ variant = 'light', keepDark = false }: NavbarPr
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
               onClick={() => setMenuOpen(false)}
             />
 
-            {/* Slide-in Card Drawer */}
+            {/* Slide-in White/Cream Minimalist Panel */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-              className="relative w-[85%] max-w-[340px] h-full shadow-2xl flex flex-col overflow-hidden"
-              style={{
-                background: 'linear-gradient(180deg, #0A1F44 0%, #061329 100%)',
-                borderLeft: '1px solid rgba(200, 150, 12, 0.25)',
-              }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="relative w-[85%] max-w-[340px] h-full bg-white shadow-2xl flex flex-col justify-between overflow-hidden border-l border-gray-100"
             >
-              {/* Drawer Header with Close Chevron */}
-              <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-amber-400/10">
-                <div className="flex items-center gap-2.5">
-                  <div className="relative w-8 h-8">
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-[#FAF8F5]">
+                <Link
+                  href="/"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3"
+                >
+                  <div className="relative w-9 h-9">
                     <Image
                       src="/images/logo-transparent.png"
                       alt="Voice of Dharma"
@@ -270,25 +270,30 @@ export default function Navbar({ variant = 'light', keepDark = false }: NavbarPr
                       className="object-contain"
                     />
                   </div>
-                  <span className="font-garamond font-semibold text-lg text-amber-400">
-                    Voice of Dharma
-                  </span>
-                </div>
+                  <div className="flex flex-col">
+                    <span className="font-garamond font-bold text-lg leading-tight text-[#0A1F44]">
+                      Voice of Dharma
+                    </span>
+                    <span className="text-[10px] font-inter uppercase tracking-widest text-[#C8960C] font-semibold">
+                      Foundation
+                    </span>
+                  </div>
+                </Link>
 
-                {/* Close Chevron button < */}
+                {/* Close button */}
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-amber-300/80 hover:text-amber-200 hover:bg-white/10 transition-colors border border-amber-400/20"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-800 hover:bg-gray-200/60 transition-colors"
                   aria-label="Close menu"
                 >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
 
-              {/* Stack of Pill Items (Reference Design) */}
-              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
+              {/* Navigation List with Professional Dividers */}
+              <div className="flex-1 overflow-y-auto divide-y divide-gray-100 bg-white">
                 {navLinks.map((link) => {
                   const active = isActive(link.href)
                   return (
@@ -296,45 +301,52 @@ export default function Navbar({ variant = 'light', keepDark = false }: NavbarPr
                       key={link.href}
                       href={link.href}
                       onClick={() => setMenuOpen(false)}
-                      className={`flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-200 ${
+                      className={`flex items-center justify-between px-6 py-4 transition-colors ${
                         active
-                          ? 'bg-gradient-to-r from-amber-400/20 via-amber-300/15 to-transparent text-amber-300 border border-amber-400/40 shadow-sm shadow-amber-900/20'
-                          : 'bg-white/[0.04] text-gray-200 hover:bg-white/[0.08] hover:text-white border border-white/[0.06]'
+                          ? 'bg-amber-50/60 text-amber-700 font-semibold'
+                          : 'text-[#0A1F44] hover:bg-gray-50/80 hover:text-amber-600 font-medium'
                       }`}
                     >
-                      {/* Icon container */}
-                      <div
-                        className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
-                          active
-                            ? 'bg-amber-400 text-[#0A1F44] shadow-md shadow-amber-400/20'
-                            : 'bg-white/[0.06] text-amber-400/80'
-                        }`}
-                      >
-                        {link.icon(active)}
+                      <div className="flex items-center gap-3.5">
+                        <div className={`transition-colors ${active ? 'text-amber-600' : 'text-gray-500'}`}>
+                          {link.icon(active)}
+                        </div>
+                        <span className="text-[15px] tracking-wide font-inter">
+                          {link.label}
+                        </span>
                       </div>
 
-                      {/* Label */}
-                      <span className={`text-base font-inter tracking-wide ${active ? 'font-semibold text-amber-200' : 'font-medium'}`}>
-                        {link.label}
-                      </span>
+                      {/* Right subtle indicator */}
+                      <svg
+                        className={`w-4 h-4 transition-transform ${
+                          active ? 'text-amber-600 translate-x-0.5' : 'text-gray-300'
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
                     </Link>
                   )
                 })}
+              </div>
 
-                {/* Donate CTA Pill */}
+              {/* Bottom Donate CTA */}
+              <div className="p-5 border-t border-gray-100 bg-[#FAF8F5]">
                 <Link
                   href="/donate"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-3 px-4 py-3.5 mt-3 rounded-2xl font-inter font-semibold text-base text-white shadow-lg transition-transform active:scale-[0.98]"
+                  className="w-full py-3.5 px-6 rounded-xl font-inter font-semibold text-sm tracking-wide text-white text-center flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98] hover:shadow-lg"
                   style={{
                     background: 'linear-gradient(135deg, #C8960C, #F5A623)',
-                    boxShadow: '0 4px 16px rgba(200, 150, 12, 0.35)',
                   }}
                 >
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                   </svg>
-                  <span>Donate Now</span>
+                  <span>Donate to Foundation</span>
                 </Link>
               </div>
             </motion.div>
