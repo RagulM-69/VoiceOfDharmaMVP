@@ -68,3 +68,13 @@ export async function createRazorpayOrder(amount: number, receiptId: string) {
   })
 }
 
+export async function fetchRazorpayPayment(paymentId: string) {
+  const razorpay = getRazorpay()
+  return razorpay.payments.fetch(paymentId)
+}
+
+export async function fetchRazorpayOrder(orderId: string) {
+  const razorpay = getRazorpay()
+  return razorpay.orders.fetch(orderId)
+}
+

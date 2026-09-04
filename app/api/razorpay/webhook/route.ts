@@ -43,6 +43,23 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (donation) {
+        // Defense-in-depth: Explicit Payment Amount & Currency Verification (in integer paise)
+        const expectedPaise = Math.round(donation.amount * 100)
+        const webhookPaymentAmount = paymentEntity?.amount as number | undefined
+        const webhookOrderAmount = orderEntity?.amount as number | undefined
+        const webhookCurrency = (paymentEntity?.currency as string | undefined) || (orderEntity?.currency as string | undefined) || 'INR'
+
+        if (
+          (webhookPaymentAmount !== undefined && webhookPaymentAmount !== expectedPaise) ||
+          (webhookOrderAmount !== undefined && webhookOrderAmount !== expectedPaise) ||
+          webhookCurrency !== 'INR'
+        ) {
+          console.error(
+            `[Razorpay Webhook] Security Alert: Webhook rejected due to amount/currency mismatch on order ${orderId}. Expected: ${expectedPaise} INR, Payment: ${webhookPaymentAmount}, Order: ${webhookOrderAmount}, Currency: ${webhookCurrency}`
+          )
+          return NextResponse.json({ error: 'Amount or currency mismatch' }, { status: 400 })
+        }
+
         // Atomic claim: set status = 'success' AND claim receipt_sent = true WHERE receipt_sent = false
         const { data: claimedRows } = await supabase
           .from('donations')
@@ -68,7 +85,7 @@ export async function POST(request: NextRequest) {
             .eq('id', donation.id)
         }
 
-        // If this thread won the atomic claim, dispatch donor receipt email
+        // If this thread won the atomic claim, dispatch donor receipt AND admin notification (exactly once)
         if (winsReceiptClaim) {
           const receiptResult = await sendDonationReceipt({
             name: donation.name,
@@ -87,18 +104,18 @@ export async function POST(request: NextRequest) {
               .update({ receipt_sent: false })
               .eq('id', donation.id)
           }
-        }
 
-        // Admin notification (non-blocking)
-        sendAdminDonationNotification({
-          name: donation.name,
-          email: donation.email,
-          phone: donation.phone,
-          amount: donation.amount,
-          purpose: donation.purpose,
-          razorpay_payment_id: paymentId,
-          created_at: donation.created_at,
-        }).catch(console.error)
+          // Admin notification (inside atomic claim to prevent duplicate admin emails)
+          sendAdminDonationNotification({
+            name: donation.name,
+            email: donation.email,
+            phone: donation.phone,
+            amount: donation.amount,
+            purpose: donation.purpose,
+            razorpay_payment_id: paymentId,
+            created_at: donation.created_at,
+          }).catch(console.error)
+        }
       }
     } else if (event === 'payment.failed') {
       const paymentEntity = body.payload?.payment?.entity

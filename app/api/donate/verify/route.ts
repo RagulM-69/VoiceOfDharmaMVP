@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyRazorpaySignature } from '@/lib/razorpay'
+import { verifyRazorpaySignature, fetchRazorpayPayment } from '@/lib/razorpay'
 import { createSupabaseServiceClient } from '@/lib/supabase-server'
 import { sendDonationReceipt, sendAdminDonationNotification } from '@/lib/resend'
 
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = createSupabaseServiceClient()
 
-    // Fetch the donation record
+    // Fetch the authoritative donation record from database
     const { data: donation, error: fetchError } = await supabase
       .from('donations')
       .select('*')
@@ -42,6 +42,38 @@ export async function POST(request: NextRequest) {
 
     if (fetchError || !donation) {
       return NextResponse.json({ error: 'Donation record not found' }, { status: 404 })
+    }
+
+    // Defense-in-depth: Explicit Payment Amount & Currency Verification (in integer paise)
+    const expectedPaise = Math.round(donation.amount * 100)
+
+    if (process.env.RAZORPAY_KEY_SECRET && process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+      try {
+        const payment = await fetchRazorpayPayment(razorpay_payment_id)
+        const paymentAmount = payment?.amount as number | undefined
+        const paymentCurrency = (payment?.currency as string | undefined) || 'INR'
+        const paymentOrderId = payment?.order_id as string | undefined
+
+        if (
+          paymentAmount !== expectedPaise ||
+          paymentCurrency !== 'INR' ||
+          (paymentOrderId && paymentOrderId !== razorpay_order_id)
+        ) {
+          console.error(
+            `[Verify API] Security Alert: Payment verification rejected due to amount/currency/order mismatch. Order: ${razorpay_order_id}, Expected: ${expectedPaise} INR, Received: ${paymentAmount} ${paymentCurrency}`
+          )
+          return NextResponse.json(
+            { error: 'Payment verification failed: amount mismatch' },
+            { status: 400 }
+          )
+        }
+      } catch (fetchErr) {
+        console.error('[Verify API] Razorpay payment fetch failed:', fetchErr)
+        return NextResponse.json(
+          { error: 'Payment verification failed' },
+          { status: 400 }
+        )
+      }
     }
 
     // Quick idempotency exit: if already verified AND receipt sent, return early
@@ -80,7 +112,7 @@ export async function POST(request: NextRequest) {
         .eq('id', donation.id)
     }
 
-    // If this thread won the atomic claim, dispatch donor receipt email
+    // If this thread won the atomic claim, dispatch donor receipt AND admin notification (exactly once)
     if (winsReceiptClaim) {
       const receiptResult = await sendDonationReceipt({
         name: donation.name,
@@ -99,18 +131,18 @@ export async function POST(request: NextRequest) {
           .update({ receipt_sent: false })
           .eq('id', donation.id)
       }
-    }
 
-    // Send admin notification (non-blocking)
-    sendAdminDonationNotification({
-      name: donation.name,
-      email: donation.email,
-      phone: donation.phone,
-      amount: donation.amount,
-      purpose: donation.purpose,
-      razorpay_payment_id,
-      created_at: donation.created_at,
-    }).catch(console.error)
+      // Send admin notification (inside atomic claim to prevent duplicate admin emails)
+      sendAdminDonationNotification({
+        name: donation.name,
+        email: donation.email,
+        phone: donation.phone,
+        amount: donation.amount,
+        purpose: donation.purpose,
+        razorpay_payment_id,
+        created_at: donation.created_at,
+      }).catch(console.error)
+    }
 
     return NextResponse.json({ success: true, paymentId: razorpay_payment_id })
   } catch (err) {
