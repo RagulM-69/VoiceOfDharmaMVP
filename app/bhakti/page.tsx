@@ -6,7 +6,7 @@ import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Link from 'next/link'
 import Image from 'next/image'
-import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+import Breadcrumb from '@/components/public/Breadcrumb'
 import { SITE_URL } from '@/lib/seo/config'
 
 
@@ -64,7 +64,6 @@ Through music, storytelling, and collective prayer, we create spaces where the s
 
   return (
     <>
-      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Bhakti Yoga', url: '/bhakti' }]} />
       <Navbar />
       <main>
         <section className="relative pt-32 pb-24 text-center overflow-hidden" style={{ background: '#0A1F44' }}>
@@ -73,6 +72,9 @@ Through music, storytelling, and collective prayer, we create spaces where the s
             <div className="absolute inset-0 bg-gradient-to-b from-[#0A1F44]/60 via-[#0A1F44]/50 to-[#0A1F44]" />
           </div>
           <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-center mb-6">
+              <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Philosophy', url: '/philosophy' }, { name: 'Bhakti Yog', url: '/bhakti' }]} />
+            </div>
             <SectionWrapper>
               <div className="text-amber-400/60 text-4xl mb-4 select-none">॥</div>
               <h1 className="font-garamond font-semibold leading-none mb-4" style={{ fontSize: 'clamp(4rem, 10vw, 7rem)', background: 'linear-gradient(135deg, #C8960C, #F5A623, #C8960C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>

@@ -6,15 +6,15 @@ import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Link from 'next/link'
 import NextImage from 'next/image'
-import { BreadcrumbSchema } from '@/components/seo/JsonLd'
-
+import Breadcrumb from '@/components/public/Breadcrumb'
+import { AboutPageSchema } from '@/components/seo/JsonLd'
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getAboutPage()
   const title = page?.seo?.metaTitle ?? 'About — Voice of Dharma Foundation'
-  const description = page?.seo?.metaDescription ?? 'Learn about the Voice of Dharma Foundation — its mission, areas of focus, and the vision behind it.'
+  const description = page?.seo?.metaDescription ?? 'Learn about the Voice of Dharma Foundation — our sacred mission, founder Hari Das, areas of focus in Karma, Bhakti, and Gyaan Yoga, and our spiritual initiatives.'
   return {
     title,
     description,
@@ -87,8 +87,9 @@ We do not approach this work as religious instruction. We approach it as an offe
 
   return (
     <>
-      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'About', url: '/about' }]} />
+      <AboutPageSchema />
       <Navbar />
+      <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'About', url: '/about' }]} />
       <main>
         {/* Hero */}
         <section className="relative pt-32 pb-24 overflow-hidden" style={{ background: '#0A1F44' }}>

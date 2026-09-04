@@ -5,15 +5,16 @@ import Navbar from '@/components/public/Navbar'
 import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import PublicationGrid from '@/components/publications/PublicationGrid'
-import { BreadcrumbSchema, CollectionPageSchema } from '@/components/seo/JsonLd'
+import { CollectionPageSchema } from '@/components/seo/JsonLd'
+import Breadcrumb from '@/components/public/Breadcrumb'
 import type { PublicationListItem } from '@/lib/sanity/types'
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const title = 'Publications — Voice of Dharma Foundation'
+  const title = 'Spiritual Publications & Digital Library — Voice of Dharma Foundation'
   const description =
-    'Discover spiritual publications from the Voice of Dharma Foundation — books rooted in the wisdom of the Bhagavad Gita, dharmic living, and conscious awareness.'
+    'Discover spiritual publications and literature from the Voice of Dharma Foundation — timeless books rooted in the wisdom of the Bhagavad Gita, dharmic living, and conscious awareness.'
 
   return {
     title,
@@ -56,14 +57,13 @@ export default async function PublicationsPage() {
     <>
       {/* JSON-LD Structured Data */}
       <CollectionPageSchema title={pageTitle} description={description} />
-      <BreadcrumbSchema
+      <Navbar />
+      <Breadcrumb
         items={[
           { name: 'Home', url: '/' },
           { name: 'Publications', url: '/publications' },
         ]}
       />
-
-      <Navbar />
 
       <main>
         {/* ── Hero ── */}

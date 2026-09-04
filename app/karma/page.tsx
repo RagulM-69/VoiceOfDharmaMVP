@@ -8,7 +8,7 @@ import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Link from 'next/link'
 import Image from 'next/image'
-import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+import Breadcrumb from '@/components/public/Breadcrumb'
 
 
 export const revalidate = 60
@@ -69,7 +69,6 @@ Every meal offered is understood as prasad — a blessing extended from the hear
 
   return (
     <>
-      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Karma Yoga', url: '/karma' }]} />
       <Navbar />
       <main>
         {/* Hero */}
@@ -83,6 +82,9 @@ Every meal offered is understood as prasad — a blessing extended from the hear
             <div className="absolute inset-0 bg-gradient-to-b from-[#0A1F44]/60 via-[#0A1F44]/50 to-[#0A1F44]" />
           </div>
           <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-center mb-6">
+              <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Philosophy', url: '/philosophy' }, { name: 'Karma Yog', url: '/karma' }]} />
+            </div>
             <SectionWrapper>
               <div className="text-amber-400/60 text-4xl mb-4 select-none">॥</div>
               <h1

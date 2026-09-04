@@ -3,6 +3,7 @@ import LetterToKrishnaClient from './LetterToKrishnaClient'
 import Footer from '@/components/public/Footer'
 import { getSiteSettings, getLetterToKrishnaPage } from '@/lib/sanity/queries'
 import { SITE_URL } from '@/lib/seo/config'
+import { LetterToKrishnaSchema, BreadcrumbSchema } from '@/components/seo/JsonLd'
 
 /**
  * SEO Decision: INDEXED
@@ -73,6 +74,13 @@ export default async function LetterToKrishnaPage() {
   const settings = await getSiteSettings()
   return (
     <>
+      <LetterToKrishnaSchema />
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: '/' },
+          { name: 'Letter to Krishna', url: '/letter-to-krishna' },
+        ]}
+      />
       {/*
         Inline style BEFORE any JS loads — prevents the body's cream
         background from flashing during the dark sanctuary intro.

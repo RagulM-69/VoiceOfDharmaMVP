@@ -8,15 +8,14 @@ import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Activity } from '@/lib/sanity/types'
-import { BreadcrumbSchema } from '@/components/seo/JsonLd'
-
+import Breadcrumb from '@/components/public/Breadcrumb'
 
 export const revalidate = 60 // New activities appear within 60 seconds
 
 export async function generateMetadata(): Promise<Metadata> {
   const pageData = await getActivitiesPage().catch(() => null)
-  const title = pageData?.seo?.metaTitle ?? 'Activities — Voice of Dharma Foundation'
-  const description = pageData?.seo?.metaDescription ?? 'Follow our activities — community service, devotional events, and spiritual programmes rooted in the path of Karma, Bhakti, and Gyaan.'
+  const title = pageData?.seo?.metaTitle ?? 'Spiritual Activities & Seva Initiatives | Voice of Dharma Foundation'
+  const description = pageData?.seo?.metaDescription ?? 'Explore our community service initiatives, Annadhanam programs, devotional gatherings, and spiritual education activities rooted in Karma, Bhakti, and Gyaan Yoga.'
   return {
     title,
     description,
@@ -182,8 +181,8 @@ export default async function ActivitiesPage() {
 
   return (
     <>
-      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Activities', url: '/activities' }]} />
       <Navbar />
+      <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Activities', url: '/activities' }]} />
       <main>
         {/* Hero */}
         <section className="relative pt-32 pb-24 text-center overflow-hidden" style={{ background: '#0A1F44' }}>

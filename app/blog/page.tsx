@@ -8,15 +8,14 @@ import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { BlogPost } from '@/lib/sanity/types'
-import { BreadcrumbSchema } from '@/components/seo/JsonLd'
-
+import Breadcrumb from '@/components/public/Breadcrumb'
 
 export const revalidate = 60 // New blog posts appear within 60 seconds
 
 export async function generateMetadata(): Promise<Metadata> {
   const blogPageData = await getBlogPage().catch(() => null)
-  const title = blogPageData?.seo?.metaTitle ?? 'Blog — Voice of Dharma Foundation'
-  const description = blogPageData?.seo?.metaDescription ?? 'Reflections on dharma, Bhagavad Gita, and conscious living from the Voice of Dharma Foundation.'
+  const title = blogPageData?.seo?.metaTitle ?? 'Spiritual Blog & Articles — Bhagavad Gita Wisdom | Voice of Dharma Foundation'
+  const description = blogPageData?.seo?.metaDescription ?? 'Explore deep reflections on dharma, the Bhagavad Gita, conscious living, and spiritual practices from the Voice of Dharma Foundation.'
   return {
     title,
     description,
@@ -120,8 +119,8 @@ export default async function BlogPage() {
 
   return (
     <>
-      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Blog', url: '/blog' }]} />
       <Navbar />
+      <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Blog', url: '/blog' }]} />
       <main>
         {/* Hero */}
         <section className="relative pt-32 pb-24 text-center overflow-hidden" style={{ background: '#0A1F44' }}>

@@ -9,6 +9,8 @@ import Link from 'next/link'
 import YogCategoryButton from '@/components/public/YogCategoryButton'
 import { Suspense } from 'react'
 import Image from 'next/image'
+import Breadcrumb from '@/components/public/Breadcrumb'
+import { DonatePageSchema } from '@/components/seo/JsonLd'
 
 export const revalidate = 60
 
@@ -67,7 +69,9 @@ When you donate, you are not merely giving money. You are participating in a lar
 
   return (
     <>
+      <DonatePageSchema />
       <Navbar />
+      <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Donate', url: '/donate' }]} />
       <main>
         <section className="relative pt-32 pb-24 text-center overflow-hidden" style={{ background: '#0A1F44' }}>
           <div className="absolute inset-0">

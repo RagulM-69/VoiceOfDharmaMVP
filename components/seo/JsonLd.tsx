@@ -344,3 +344,125 @@ export function CollectionPageSchema({ title, description }: CollectionPageSchem
     />
   )
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   8. Donate Action Schema — applied on /donate
+───────────────────────────────────────────────────────────────────────────── */
+export function DonatePageSchema() {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'DonateAction',
+    name: 'Donate to Voice of Dharma Foundation',
+    description:
+      'Support the mission of the Voice of Dharma Foundation in spreading the light of Bhagavad Gita, Annadhanam, Gurukuls, and Temple preservation.',
+    recipient: {
+      '@type': 'NGO',
+      name: 'Voice of Dharma Foundation',
+      url: SITE_URL,
+      logo: `${SITE_URL}/images/logo.png`,
+      image: `${SITE_URL}/images/og-default.png`,
+    },
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${SITE_URL}/donate`,
+      actionPlatform: [
+        'http://schema.org/DesktopWebPlatform',
+        'http://schema.org/MobileWebPlatform',
+      ],
+    },
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   9. About Page Schema — applied on /about
+───────────────────────────────────────────────────────────────────────────── */
+export function AboutPageSchema() {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'About Voice of Dharma Foundation',
+    description:
+      'Discover the mission, philosophy, and founders of the Voice of Dharma Foundation — dedicated to preserving Sanatana Dharma and Bhagavad Gita teachings.',
+    url: `${SITE_URL}/about`,
+    mainEntity: {
+      '@type': 'NGO',
+      name: 'Voice of Dharma Foundation',
+      url: SITE_URL,
+      logo: `${SITE_URL}/images/logo.png`,
+      image: `${SITE_URL}/images/og-default.png`,
+    },
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   10. Letter to Krishna Schema — applied on /letter-to-krishna
+───────────────────────────────────────────────────────────────────────────── */
+export function LetterToKrishnaSchema() {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Letter to Krishna — Voice of Dharma Foundation',
+    description:
+      'Pour your heart out in sacred communion with Lord Krishna. A contemplative space for prayer, reflection, and spiritual connection.',
+    url: `${SITE_URL}/letter-to-krishna`,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Voice of Dharma Foundation',
+      url: SITE_URL,
+    },
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   11. Contact Page Schema — applied on /contact
+───────────────────────────────────────────────────────────────────────────── */
+export function ContactPageSchema({ settings }: { settings?: SiteSettings | null } = {}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'Contact Voice of Dharma Foundation',
+    description:
+      'Connect with the Voice of Dharma Foundation team for general inquiries, volunteering, seva opportunities, and spiritual guidance.',
+    url: `${SITE_URL}/contact`,
+    mainEntity: {
+      '@type': 'NGO',
+      name: 'Voice of Dharma Foundation',
+      url: SITE_URL,
+      logo: `${SITE_URL}/images/logo.png`,
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: settings?.email || 'contact@voiceofdharmafoundation.org',
+        telephone: settings?.phone || '+91 98452 67310',
+      },
+    },
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}

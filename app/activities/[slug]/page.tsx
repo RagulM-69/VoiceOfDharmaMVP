@@ -10,8 +10,8 @@ import Link from 'next/link'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import type { Activity } from '@/lib/sanity/types'
-import { ActivitySchema, BreadcrumbSchema } from '@/components/seo/JsonLd'
-
+import { ActivitySchema } from '@/components/seo/JsonLd'
+import Breadcrumb from '@/components/public/Breadcrumb'
 
 export const revalidate = 60
 export const dynamicParams = true
@@ -140,14 +140,14 @@ export default async function ActivityDetailPage({ params }: { params: { slug: s
         location={activity.location}
         imageUrl={coverUrl ?? undefined}
       />
-      <BreadcrumbSchema
+      <Navbar />
+      <Breadcrumb
         items={[
           { name: 'Home', url: '/' },
           { name: 'Activities', url: '/activities' },
           { name: activity.title, url: `/activities/${activity.slug.current}` },
         ]}
       />
-      <Navbar />
       <main>
         {/* ── Hero ── */}
         <section

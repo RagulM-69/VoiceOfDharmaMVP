@@ -9,8 +9,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
-import { BlogPostingSchema, BreadcrumbSchema } from '@/components/seo/JsonLd'
-
+import { BlogPostingSchema } from '@/components/seo/JsonLd'
+import Breadcrumb from '@/components/public/Breadcrumb'
 
 export const revalidate = 60
 
@@ -136,14 +136,14 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         slug={post.slug.current}
         imageUrl={coverUrl ?? undefined}
       />
-      <BreadcrumbSchema
+      <Navbar />
+      <Breadcrumb
         items={[
           { name: 'Home', url: '/' },
           { name: 'Blog', url: '/blog' },
           { name: post.title, url: `/blog/${post.slug.current}` },
         ]}
       />
-      <Navbar />
       <main>
         {/* Hero / Cover */}
         <section className="relative pt-32 pb-20 overflow-hidden" style={{ background: '#0A1F44' }}>

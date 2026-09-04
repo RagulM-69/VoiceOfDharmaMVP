@@ -5,7 +5,7 @@ import Navbar from '@/components/public/Navbar'
 import Footer from '@/components/public/Footer'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
-import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+import Breadcrumb from '@/components/public/Breadcrumb'
 import { SITE_URL } from '@/lib/seo/config'
 
 
@@ -66,7 +66,6 @@ export default async function HaridasPage() {
 
   return (
     <>
-      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Hari Das', url: '/haridas' }]} />
       <Navbar />
       <main>
         {/* Hero */}
@@ -74,6 +73,9 @@ export default async function HaridasPage() {
           <div className="absolute inset-0">
             <Image src="/images/dharma-reflection.png" alt="Hari Das — Founder of Voice of Dharma Foundation" fill className="object-cover opacity-25" priority sizes="100vw" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A1F44]/60 to-[#0A1F44]" />
+          </div>
+          <div className="flex justify-center mb-6 relative z-10">
+            <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Hari Das', url: '/haridas' }]} />
           </div>
           <SectionWrapper>
             <div className="relative text-center">

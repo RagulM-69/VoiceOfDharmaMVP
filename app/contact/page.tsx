@@ -5,6 +5,8 @@ import Footer from '@/components/public/Footer'
 import ContactForm from '@/components/public/ContactForm'
 import SectionWrapper from '@/components/public/SectionWrapper'
 import Image from 'next/image'
+import Breadcrumb from '@/components/public/Breadcrumb'
+import { ContactPageSchema } from '@/components/seo/JsonLd'
 import { SITE_URL } from '@/lib/seo/config'
 
 export const revalidate = 60
@@ -49,6 +51,7 @@ export default async function ContactPage() {
 
   return (
     <>
+      <ContactPageSchema settings={settings} />
       <Navbar />
       <main>
         {/* Hero */}
@@ -58,6 +61,9 @@ export default async function ContactPage() {
             <div className="absolute inset-0 bg-gradient-to-b from-[#0A1F44]/60 via-[#0A1F44]/50 to-[#0A1F44]" />
           </div>
           <div className="relative">
+            <div className="flex justify-center mb-6">
+              <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Contact', url: '/contact' }]} />
+            </div>
             <SectionWrapper>
               <div className="text-amber-400/50 text-4xl mb-4 select-none font-garamond">॥</div>
               <h1 className="font-garamond text-5xl md:text-6xl font-semibold text-white mb-4">{contactTitle}</h1>
