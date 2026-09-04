@@ -205,6 +205,7 @@ It is an invitation to observe more carefully, to act more consciously, and to u
 
   return (
     <>
+      <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Philosophy', url: '/philosophy' }]} />
       <Navbar />
       <main>
 
@@ -215,9 +216,6 @@ It is an invitation to observe more carefully, to act more consciously, and to u
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A1F44]/50 to-[#0A1F44]" />
           </div>
           <div className="relative max-w-3xl mx-auto px-6 text-center">
-            <div className="flex justify-center mb-6">
-              <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Philosophy', url: '/philosophy' }]} />
-            </div>
             <SectionWrapper>
               <div className="text-amber-400/50 text-5xl mb-6 select-none font-garamond">॥</div>
               <h1 className="font-garamond text-6xl md:text-7xl font-semibold text-white mb-5 leading-tight">{heroHeading}</h1>

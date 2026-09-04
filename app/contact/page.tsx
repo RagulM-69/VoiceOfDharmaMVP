@@ -52,6 +52,7 @@ export default async function ContactPage() {
   return (
     <>
       <ContactPageSchema settings={settings} />
+      <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Contact', url: '/contact' }]} />
       <Navbar />
       <main>
         {/* Hero */}
@@ -61,9 +62,6 @@ export default async function ContactPage() {
             <div className="absolute inset-0 bg-gradient-to-b from-[#0A1F44]/60 via-[#0A1F44]/50 to-[#0A1F44]" />
           </div>
           <div className="relative">
-            <div className="flex justify-center mb-6">
-              <Breadcrumb items={[{ name: 'Home', url: '/' }, { name: 'Contact', url: '/contact' }]} />
-            </div>
             <SectionWrapper>
               <div className="text-amber-400/50 text-4xl mb-4 select-none font-garamond">॥</div>
               <h1 className="font-garamond text-5xl md:text-6xl font-semibold text-white mb-4">{contactTitle}</h1>

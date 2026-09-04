@@ -16,7 +16,6 @@ import PublicationSpecs from '@/components/publications/PublicationSpecs'
 import PreviewReader from '@/components/publications/PreviewReader'
 import RelatedPublications from '@/components/publications/RelatedPublications'
 import ShareButtons from '@/components/publications/ShareButtons'
-import PublicationBreadcrumb from '@/components/publications/PublicationBreadcrumb'
 import { BookSchema, BreadcrumbSchema } from '@/components/seo/JsonLd'
 import type { PublicationListItem } from '@/lib/sanity/types'
 
@@ -196,9 +195,6 @@ export default async function PublicationDetailPage({
       <Navbar />
 
       <main>
-        {/* ── Visual Breadcrumb ── */}
-        <PublicationBreadcrumb bookTitle={publication.title} />
-
         {/* ── Hero: Cover + Meta + Purchase ── */}
         <PublicationHero publication={publication} />
 
